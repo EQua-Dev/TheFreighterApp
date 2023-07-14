@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/weigher_set_price_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/padding_mini"
+        android:layout_marginTop="@dimen/padding_mini"
+        android:layout_marginEnd="@dimen/padding_mini"
+        android:layout_marginBottom="@dimen/padding_mini"
+        android:padding="@dimen/padding_mini"
+        android:text="@string/weigher_set_price_subtitle"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_s" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_layout_weigher_charge"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/weigher_set_price_subtitle"
+        android:layout_margin="@dimen/margin_mini"
+        android:hint="@string/set_weigher_charge"
+        android:paddingTop="@dimen/padding_midi">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/set_weigher_charge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/set_weigher_charge"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:maxLength="6"
+            android:labelFor="@id/set_weigher_charge" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/set_weigher_charge_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_input_layout_weigher_charge"
+        android:layout_marginStart="@dimen/margin_midi"
+        android:layout_marginTop="@dimen/margin_midi"
+        android:layout_marginEnd="@dimen/margin_midi"
+        android:layout_marginBottom="@dimen/margin_midi"
+        android:padding="@dimen/padding_mini"
+        android:text="@string/two_fa_btn"
+        app:cornerRadius="@dimen/margin_mini" />
+
+
+</RelativeLayout>

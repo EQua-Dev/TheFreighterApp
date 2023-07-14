@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".features.IntroScreen">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textSize="@dimen/text_xl"
+        android:textStyle="bold"
+        android:layout_margin="@dimen/margin_mini"
+        android:padding="@dimen/padding_mini"
+        android:text="@string/app_name" />
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="@dimen/button_width_xxl"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        app:cornerRadius="@dimen/margin_mini"
+        android:text="@string/client"
+        app:backgroundTint="@color/primary"
+        android:layout_above="@id/btn_driver"
+        android:id="@+id/btn_client"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="@dimen/button_width_xxl"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        app:cornerRadius="@dimen/margin_mini"
+        android:text="@string/driver"
+        app:backgroundTint="@color/neutral"
+        android:id="@+id/btn_driver"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="@dimen/button_width_xxl"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        app:cornerRadius="@dimen/margin_mini"
+        android:text="@string/weigher"
+        android:layout_below="@id/btn_driver"
+        android:id="@+id/btn_weigher"/>
+
+</RelativeLayout>

@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/padding_mini">
+
+
+    <TextView
+        android:id="@+id/tv_create_dispatch_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/padding_mini"
+        android:layout_marginTop="@dimen/padding_mini"
+        android:layout_marginEnd="@dimen/padding_mini"
+        android:text="@string/tv_create_dispatch_title"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_l" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/new_dispatch_request_form"
+            android:orientation="vertical"
+            android:layout_below="@+id/tv_create_dispatch_title">
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_layout_choose_package_type"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_mini"
+                android:layout_marginEnd="@dimen/padding_mini"
+                android:padding="@dimen/padding_mini">
+
+                <AutoCompleteTextView
+                    android:id="@+id/new_dispatch_choose_package_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/new_dispatch_choose_package_type"
+                    android:importantForAutofill="no"
+                    android:inputType="textPersonName"
+                    android:padding="@dimen/padding_mini" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="8">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/text_input_layout_dispatch_pickup_address"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/padding_mini"
+                    android:layout_marginEnd="@dimen/padding_mini"
+                    android:layout_weight="6.5"
+                    android:hint="@string/dispatch_pickup_address">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/dispatch_pickup_address"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/dispatch_pickup_address"
+                        android:importantForAutofill="no"
+                        android:inputType="text"
+                        android:labelFor="@id/dispatch_pickup_address" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_dispatch_pickup_address_here"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/padding_mini"
+                    android:layout_weight="1.5"
+                    android:layout_gravity="center"
+                    android:text="@string/here"
+                    android:textAlignment="center"
+                    android:textColor="@color/primary"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_layout_dispatch_pickup_province"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_mini"
+                android:layout_marginEnd="@dimen/padding_mini"
+                android:hint="@string/dispatch_pickup_province"
+                android:padding="@dimen/padding_mini">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/dispatch_pickup_province"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/dispatch_pickup_province"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:labelFor="@id/dispatch_pickup_province" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_layout_dispatch_pickup_country"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_mini"
+                android:layout_marginEnd="@dimen/padding_mini"
+                android:hint="@string/dispatch_pickup_country"
+                android:padding="@dimen/padding_mini">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/dispatch_pickup_country"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/dispatch_pickup_country"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:labelFor="@id/dispatch_pickup_country" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_layout_dispatch_drop_off_address"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_mini"
+                android:layout_marginEnd="@dimen/padding_mini"
+                android:hint="@string/dispatch_drop_off_address"
+                android:padding="@dimen/padding_mini">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/dispatch_drop_off_address"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/dispatch_drop_off_address"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:labelFor="@id/dispatch_pickup_province" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_layout_dispatch_drop_off_province"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_mini"
+                android:layout_marginEnd="@dimen/padding_mini"
+                android:hint="@string/dispatch_drop_off_province"
+                android:padding="@dimen/padding_mini">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/dispatch_drop_off_province"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/dispatch_drop_off_province"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:labelFor="@id/dispatch_drop_off_province" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_layout_dispatch_drop_off_country"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_mini"
+                android:layout_marginEnd="@dimen/padding_mini"
+                android:hint="@string/dispatch_drop_off_country"
+                android:padding="@dimen/padding_mini">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/dispatch_drop_off_country"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/dispatch_drop_off_country"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:labelFor="@id/dispatch_drop_off_country" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="8">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/text_input_layout_dispatch_package_weight"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/padding_mini"
+                    android:layout_marginEnd="@dimen/padding_mini"
+                    android:layout_weight="6.5"
+                    android:hint="@string/dispatch_package_weight"
+                    android:padding="@dimen/padding_mini">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/dispatch_package_weight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/dispatch_package_weight"
+                        android:importantForAutofill="no"
+                        android:inputType="text"
+                        android:labelFor="@id/dispatch_package_weight" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/text_dispatch_package_weight_contractors"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/padding_mini"
+                    android:layout_gravity="center"
+                    android:layout_weight="1.5"
+                    android:padding="@dimen/padding_mini"
+                    android:textAlignment="center"
+                    android:text="@string/dispatch_package_weight_contractors"
+                    android:textColor="@color/primary"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_layout_dispatch_pickup_date"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_mini"
+                android:layout_marginEnd="@dimen/padding_mini"
+                android:hint="@string/dispatch_pickup_date"
+                android:padding="@dimen/padding_mini">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/dispatch_pickup_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/dispatch_pickup_date"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:labelFor="@id/dispatch_pickup_date" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="3"
+        android:orientation="horizontal"
+        android:layout_below="@id/new_dispatch_request_form">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/new_dispatch_cancel_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/margin_midi"
+            android:layout_marginTop="@dimen/margin_midi"
+            android:layout_marginEnd="@dimen/margin_midi"
+            android:layout_marginBottom="@dimen/margin_midi"
+            android:backgroundTint="@color/reject"
+            android:padding="@dimen/padding_mini"
+            android:text="@string/new_dispatch_cancel_btn"
+            app:cornerRadius="@dimen/margin_mini" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/new_dispatch_save_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/margin_midi"
+            android:layout_marginTop="@dimen/margin_midi"
+            android:layout_marginEnd="@dimen/margin_midi"
+            android:layout_marginBottom="@dimen/margin_midi"
+            android:backgroundTint="@color/neutral"
+            android:padding="@dimen/padding_mini"
+            android:text="@string/new_dispatch_save_btn"
+            app:cornerRadius="@dimen/margin_mini" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/new_dispatch_submit_btn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/margin_midi"
+            android:layout_marginTop="@dimen/margin_midi"
+            android:layout_marginEnd="@dimen/margin_midi"
+            android:layout_marginBottom="@dimen/margin_midi"
+            android:backgroundTint="@color/primary"
+            android:padding="@dimen/padding_mini"
+            android:text="@string/new_dispatch_submit_btn"
+            app:cornerRadius="@dimen/margin_mini" />
+
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>

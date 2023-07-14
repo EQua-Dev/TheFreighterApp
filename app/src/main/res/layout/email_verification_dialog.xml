@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/phone_verification_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/padding_mini"
+        android:layout_marginTop="@dimen/padding_mini"
+        android:layout_marginEnd="@dimen/padding_mini"
+        android:layout_marginBottom="@dimen/padding_mini"
+        android:padding="@dimen/padding_mini"
+        android:text="@string/email_verification_subtitle"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_xs" />
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/email_verification_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/phone_verification_subtitle"
+        android:layout_margin="@dimen/margin_mini"
+        android:importantForAutofill="no"
+        android:padding="@dimen/padding_mini"
+        tools:text="email@email.com" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/email_verification_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/email_verification_email"
+        android:layout_marginStart="@dimen/margin_midi"
+        android:layout_marginTop="@dimen/margin_midi"
+        android:layout_marginEnd="@dimen/margin_midi"
+        android:layout_marginBottom="@dimen/margin_midi"
+        android:padding="@dimen/padding_mini"
+        android:backgroundTint="@color/primary"
+        android:text="@string/email_verification_btn"
+        app:cornerRadius="@dimen/margin_mini" />
+
+
+</RelativeLayout>

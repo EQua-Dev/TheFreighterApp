@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/splashScreen">
+
+    <fragment
+        android:id="@+id/introScreen"
+        android:name="com.androidstrike.schoolprojects.thefreighterapp.features.IntroScreen"
+        android:label="fragment_intro_screen"
+        tools:layout="@layout/fragment_intro_screen" >
+        <action
+            android:id="@+id/action_introScreen_to_signIn"
+            app:destination="@id/signIn" />
+    </fragment>
+    <fragment
+        android:id="@+id/signIn"
+        android:name="com.androidstrike.schoolprojects.thefreighterapp.features.auth.SignIn"
+        android:label="fragment_sign_in"
+        tools:layout="@layout/fragment_sign_in" >
+        <action
+            android:id="@+id/action_signIn_to_register"
+            app:destination="@id/register" />
+        <action
+            android:id="@+id/action_signIn_to_resetPassword"
+            app:destination="@id/resetPassword" />
+        <argument
+            android:name="role"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_signIn_to_clientHome"
+            app:destination="@id/clientHome" />
+        <action
+            android:id="@+id/action_signIn_to_phoneVerification"
+            app:destination="@id/phoneVerification" />
+    </fragment>
+    <fragment
+        android:id="@+id/register"
+        android:name="com.androidstrike.schoolprojects.thefreighterapp.features.auth.Register"
+        android:label="fragment_register"
+        tools:layout="@layout/fragment_register" >
+        <action
+            android:id="@+id/action_register_to_signIn"
+            app:destination="@id/signIn" />
+        <argument
+            android:name="role"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_register_to_registerVehicle"
+            app:destination="@id/registerVehicle" />
+    </fragment>
+    <fragment
+        android:id="@+id/resetPassword"
+        android:name="com.androidstrike.schoolprojects.thefreighterapp.features.auth.ResetPassword"
+        android:label="fragment_reset_password"
+        tools:layout="@layout/fragment_reset_password" >
+        <argument
+            android:name="role"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/splashScreen"
+        android:name="com.androidstrike.schoolprojects.thefreighterapp.SplashScreen"
+        android:label="fragment_splash_screen"
+        tools:layout="@layout/fragment_splash_screen" >
+        <action
+            android:id="@+id/action_splashScreen_to_introScreen"
+            app:destination="@id/introScreen" />
+    </fragment>
+    <fragment
+        android:id="@+id/clientHome"
+        android:name="com.androidstrike.schoolprojects.thefreighterapp.features.home.client.ClientHome"
+        android:label="fragment_client_home"
+        tools:layout="@layout/fragment_client_home" >
+        <action
+            android:id="@+id/action_clientHome_to_introScreen"
+            app:destination="@id/introScreen" />
+        <argument
+            android:name="role"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/registerVehicle"
+        android:name="com.androidstrike.schoolprojects.thefreighterapp.features.auth.RegisterVehicle"
+        android:label="fragment_register_vehicle"
+        tools:layout="@layout/fragment_register_vehicle" >
+        <action
+            android:id="@+id/action_registerVehicle_to_registerContact"
+            app:destination="@id/registerContact" />
+        <argument
+            android:name="role"
+            app:argType="string" />
+        <argument
+            android:name="uid"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/registerContact"
+        android:name="com.androidstrike.schoolprojects.thefreighterapp.features.auth.RegisterContact"
+        android:label="fragment_register_contact"
+        tools:layout="@layout/fragment_register_contact" >
+        <argument
+            android:name="role"
+            app:argType="string" />
+        <argument
+            android:name="uid"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_registerContact_to_clientHome"
+            app:destination="@id/clientHome" />
+    </fragment>
+    <fragment
+        android:id="@+id/phoneVerification"
+        android:name="com.androidstrike.schoolprojects.thefreighterapp.features.auth.PhoneVerification"
+        android:label="fragment_phone_verification"
+        tools:layout="@layout/fragment_phone_verification" >
+        <action
+            android:id="@+id/action_phoneVerification_to_clientHome"
+            app:destination="@id/clientHome" />
+        <argument
+            android:name="role"
+            app:argType="string" />
+        <argument
+            android:name="phoneNumber"
+            app:argType="string" />
+    </fragment>
+</navigation>

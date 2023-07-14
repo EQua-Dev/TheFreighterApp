@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".features.auth.Register">
+
+    <TextView
+        android:id="@+id/tv_register_customer_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/padding_mini"
+        android:layout_marginTop="@dimen/padding_mini"
+        android:layout_marginEnd="@dimen/padding_mini"
+        android:text="@string/register_user_title"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_xxl" />
+
+    <TextView
+        android:id="@+id/tv_register_customer_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_register_customer_title"
+        android:layout_above="@id/card_register_customer"
+        android:text="@string/register_subtitle"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_s" />
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_register_customer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        app:cardBackgroundColor="#23018786"
+        android:layout_margin="@dimen/padding_mini"
+
+        app:cardElevation="@dimen/padding_mini"
+        app:strokeColor="@color/white"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_midi"
+            android:orientation="vertical">
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_layout_register_user_name"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_mini"
+                android:layout_marginEnd="@dimen/padding_mini"
+                android:hint="@string/register_user_name"
+                android:padding="@dimen/padding_mini">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/register_user_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/register_user_name"
+                    android:importantForAutofill="no"
+                    android:inputType="textPersonName"
+                    android:labelFor="@id/register_user_name" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_layout_register_customer_email"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_mini"
+                android:layout_marginEnd="@dimen/padding_mini"
+                android:hint="@string/register_email"
+                android:padding="@dimen/padding_mini">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/register_customer_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/register_email"
+                    android:importantForAutofill="no"
+                    android:inputType="textEmailAddress"
+                    android:labelFor="@id/register_customer_email" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_layout_register_customer_date_of_birth"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_mini"
+                android:layout_marginEnd="@dimen/padding_mini"
+                android:hint="@string/register_date_of_birth"
+                android:padding="@dimen/padding_mini">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/register_customer_date_of_birth"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/register_date_of_birth"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:labelFor="@id/register_customer_date_of_birth" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="4"
+                android:layout_margin="@dimen/padding_mini"
+                android:padding="@dimen/padding_mini"
+                android:orientation="horizontal">
+
+                <com.hbb20.CountryCodePicker
+                    android:id="@+id/countryCodePicker"
+                    android:layout_width="0dp"
+                    android:layout_gravity="center"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:ccp_countryPreference="IE,NG,GB"
+                    app:ccp_defaultNameCode="IE"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/text_input_layout_register_customer_phone"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:layout_marginStart="@dimen/padding_mini"
+                    android:layout_marginEnd="@dimen/padding_mini"
+                    android:hint="@string/register_phone"
+                    android:padding="@dimen/padding_mini">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/register_customer_phone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/register_phone"
+                        android:importantForAutofill="no"
+                        android:inputType="number"
+                        android:maxLength="10"
+                        android:labelFor="@id/register_customer_phone" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_layout_register_customer_password"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_mini"
+                android:layout_marginEnd="@dimen/padding_mini"
+                android:hint="@string/sign_up_password"
+                android:padding="@dimen/padding_mini"
+                app:passwordToggleEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/register_customer_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/sign_up_password"
+                    android:importantForAutofill="no"
+                    android:inputType="textPassword"
+                    android:labelFor="@id/register_customer_password" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_layout_register_customer_confirm_password"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_mini"
+                android:layout_marginEnd="@dimen/padding_mini"
+                android:hint="@string/sign_up_confirm_password"
+                android:padding="@dimen/padding_mini"
+                app:passwordToggleEnabled="true"
+                >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/register_customer_confirm_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/sign_up_confirm_password"
+                    android:importantForAutofill="no"
+                    android:inputType="textPassword"
+                    android:labelFor="@id/register_customer_confirm_password" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/user_register_btn"
+        android:layout_width="@dimen/button_width_xxl"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/card_register_customer"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="@dimen/margin_midi"
+        android:backgroundTint="@color/primary"
+        android:padding="@dimen/padding_mini"
+        android:text="@string/register_user_title"
+        app:cornerRadius="@dimen/margin_mini" />
+
+    <TextView
+        android:id="@+id/user_register_login_prompt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/user_register_btn"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:layout_marginStart="@dimen/margin_mini"
+        android:layout_marginEnd="@dimen/margin_mini"
+        android:padding="@dimen/padding_mini"
+        android:text="@string/log_in_text"
+        android:textColor="@color/primary"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_s" />
+
+
+</RelativeLayout>

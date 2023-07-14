@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:padding="@dimen/padding_mini"
+    android:layout_margin="@dimen/padding_mini"
+    android:weightSum="6">
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        app:srcCompat="@drawable/ic_unselected"
+        android:contentDescription="@string/select_external_weigher"
+        android:padding="@dimen/padding_mini"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="4"
+        android:padding="@dimen/padding_mini"
+        tools:text="@tools:sample/full_names"
+        android:id="@+id/external_weigher_name"/>
+
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        tools:text="$20"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:id="@+id/external_weigher_price"/>
+
+
+
+</LinearLayout>

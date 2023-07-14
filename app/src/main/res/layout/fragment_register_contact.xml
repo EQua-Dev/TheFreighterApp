@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".features.auth.RegisterContact">
+
+
+    <TextView
+        android:id="@+id/tv_register_contact_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/padding_mini"
+        android:layout_marginTop="@dimen/padding_mini"
+        android:layout_marginEnd="@dimen/padding_mini"
+        android:text="@string/tv_register_contact_title"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_xxl" />
+
+    <TextView
+        android:id="@+id/tv_register_contact_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_register_contact_title"
+        android:text="@string/tv_register_contact_subtitle"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_s" />
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_register_contact"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        app:cardBackgroundColor="#23018786"
+        android:layout_margin="@dimen/padding_mini"
+        app:cardElevation="@dimen/padding_mini"
+        app:strokeColor="@color/white"
+        tools:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/padding_midi"
+            android:orientation="vertical">
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_layout_register_contact_name"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_mini"
+                android:layout_marginEnd="@dimen/padding_mini"
+                android:hint="@string/register_contact_name"
+                android:padding="@dimen/padding_mini">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/register_contact_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/register_contact_name"
+                    android:importantForAutofill="no"
+                    android:inputType="textPersonName"
+                    android:labelFor="@id/register_contact_name" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="4"
+                android:layout_margin="@dimen/padding_mini"
+                android:padding="@dimen/padding_mini"
+                android:orientation="horizontal">
+
+                <com.hbb20.CountryCodePicker
+                    android:id="@+id/register_contact_country_code_picker"
+                    android:layout_width="0dp"
+                    android:layout_gravity="center"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:ccp_countryPreference="IE,NG,GB"
+                    app:ccp_defaultNameCode="IE"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/text_input_layout_register_contact_phone_number"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:layout_marginStart="@dimen/padding_mini"
+                    android:layout_marginEnd="@dimen/padding_mini"
+                    android:hint="@string/register_contact_phone_number"
+                    android:padding="@dimen/padding_mini">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/register_contact_phone_number"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/register_contact_phone_number"
+                        android:importantForAutofill="no"
+                        android:inputType="number"
+                        android:maxLength="10"
+                        android:labelFor="@id/register_contact_phone_number" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_layout_register_contact_address_line"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_mini"
+                android:layout_marginEnd="@dimen/padding_mini"
+                android:hint="@string/register_contact_address_line"
+                android:padding="@dimen/padding_mini">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/register_contact_address_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/register_contact_address_line"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:labelFor="@id/register_contact_address_line" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/text_input_layout_register_contact_city"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/padding_mini"
+                android:layout_marginEnd="@dimen/padding_mini"
+                android:hint="@string/register_contact_city"
+                android:padding="@dimen/padding_mini">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/register_contact_city"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/register_contact_city"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:labelFor="@id/register_contact_city" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/register_contact_country"
+                android:padding="@dimen/padding_mini"/>
+
+            <com.hbb20.CountryCodePicker
+                android:id="@+id/contact_address_country"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding_mini"
+                app:ccp_showFullName="true"
+                app:ccp_showPhoneCode="false"
+                app:ccp_showNameCode="false"
+                app:ccp_textGravity="LEFT"
+                app:ccp_defaultNameCode="IE"/>
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/user_register_contact_btn"
+        android:layout_width="@dimen/button_width_xxl"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/card_register_contact"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="@dimen/margin_midi"
+        android:backgroundTint="@color/primary"
+        android:padding="@dimen/padding_mini"
+        android:text="@string/tv_register_contact_title"
+        app:cornerRadius="@dimen/margin_mini" />
+
+
+</RelativeLayout>
