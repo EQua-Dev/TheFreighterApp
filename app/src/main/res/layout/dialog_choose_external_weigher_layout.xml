@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/padding_mini"
         android:layout_marginEnd="@dimen/padding_mini"
-        android:hint="@string/dispatch_pickup_date"
+        android:hint="@string/dispatch_weighing_date"
         android:padding="@dimen/padding_mini">
 
         <com.google.android.material.textfield.TextInputEditText

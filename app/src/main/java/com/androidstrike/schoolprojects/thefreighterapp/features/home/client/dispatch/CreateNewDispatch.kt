@@ -7,9 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Button
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.androidstrike.schoolprojects.thefreighterapp.R
 import com.androidstrike.schoolprojects.thefreighterapp.databinding.FragmentCreateNewDispatchBinding
 import com.androidstrike.schoolprojects.thefreighterapp.models.Dispatch
@@ -18,10 +23,15 @@ import com.androidstrike.schoolprojects.thefreighterapp.utils.Common
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.STATUS_AWAITING_WEIGHER
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.STATUS_DRAFT
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.STATUS_PENDING_DRIVER
+import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.dispatchCollectionRef
 import com.androidstrike.schoolprojects.thefreighterapp.utils.hideProgress
 import com.androidstrike.schoolprojects.thefreighterapp.utils.showProgress
 import com.androidstrike.schoolprojects.thefreighterapp.utils.toast
+import com.firebase.ui.firestore.FirestoreRecyclerAdapter
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,6 +40,7 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import java.util.UUID
 
 class CreateNewDispatch : Fragment() {
 
@@ -38,6 +49,9 @@ class CreateNewDispatch : Fragment() {
 
     private val args: CreateNewDispatchArgs by navArgs()
     private lateinit var loggedInUser: UserData
+
+    private var externalWeighersList: MutableList<UserData> = mutableListOf()
+
 
     private lateinit var status: String
     private lateinit var packageType: String
@@ -66,6 +80,10 @@ class CreateNewDispatch : Fragment() {
 
     private val calendar = Calendar.getInstance()
 
+
+    private var externalWeighersAdapter: FirestoreRecyclerAdapter<UserData, ChooseExternalWeighersAdapter>? =
+        null
+
     private val TAG = "CreateNewDispatch"
 
 
@@ -85,6 +103,7 @@ class CreateNewDispatch : Fragment() {
 
         with(binding) {
 
+            val dispatchId = UUID.randomUUID().toString()
 
             val packageTypes = resources.getStringArray(R.array.package_types)
             val packageTypesAdapter =
@@ -224,7 +243,7 @@ class CreateNewDispatch : Fragment() {
                         dropOffProvince = dropOffProvince,
                         dropOffCountry = dropOffCountry,
                         pickupDate = pickupDate,
-                        dispatchId = System.currentTimeMillis().toString(),
+                        dispatchId = dispatchId,
                         dateCreated = System.currentTimeMillis().toString()
                     )
 
@@ -236,7 +255,39 @@ class CreateNewDispatch : Fragment() {
 
             textDispatchPackageWeightContractors.setOnClickListener {
                 //prompt to fill out other details first
-                launchExternalContractorsDialog()
+                packageType = newDispatchChoosePackageType.text.toString().trim()
+                weight = dispatchPackageWeight.text.toString().trim()
+                client = loggedInUser.userId
+                lastUpdater = client
+                pickupAddress = dispatchPickupAddress.text.toString().trim()
+                pickupProvince = dispatchPickupProvince.text.toString().trim()
+                pickupCountry = dispatchPickupCountry.selectedCountryName
+                dropOffAddress = dispatchDropOffAddress.text.toString().trim()
+                dropOffProvince = dispatchDropOffProvince.text.toString().trim()
+                dropOffCountry = dispatchDropOffCountry.selectedCountryName
+                pickupDate = dispatchPickupDate.text.toString().trim()
+
+
+                if (packageType.isNotEmpty() && pickupAddress.isNotEmpty() && pickupProvince.isNotEmpty() && pickupDate.isNotEmpty() && dropOffAddress.isNotEmpty() && dropOffProvince.isNotEmpty()) {
+
+                    val newDispatch = Dispatch(
+                        packageType = packageType,
+                        client = client,
+                        lastUpdater = lastUpdater,
+                        pickupAddress = pickupAddress,
+                        pickupProvince = pickupProvince,
+                        pickupCountry = pickupCountry,
+                        dropOffAddress = dropOffAddress,
+                        dropOffProvince = dropOffProvince,
+                        dropOffCountry = dropOffCountry,
+                        pickupDate = pickupDate,
+                        dispatchId = dispatchId,
+                        dateCreated = System.currentTimeMillis().toString()
+                    )
+
+                    launchExternalContractorsDialog(newDispatch)                } else {
+                    requireContext().toast(resources.getString(R.string.fill_details_before_weighing))
+                }
             }
 
             newDispatchCancelBtn.setOnClickListener {
@@ -283,8 +334,173 @@ class CreateNewDispatch : Fragment() {
 
     }
 
-    private fun launchExternalContractorsDialog() {
+    private fun launchExternalContractorsDialog(dispatch: Dispatch) {
 
+        CoroutineScope(Dispatchers.IO).launch {
+            Common.userCollectionRef.whereEqualTo("role", resources.getString(R.string.weigher))
+                .get()
+                .addOnSuccessListener { querySnapshot: QuerySnapshot ->
+
+                    for (document in querySnapshot.documents) {
+                        val item = document.toObject(UserData::class.java)
+                        if (item != null) {
+                            externalWeighersList.add(item)
+                        }
+                    }
+                    launchAssignStaffDialog(dispatch)
+
+                }
+        }
+    }
+
+    private fun launchAssignStaffDialog(dispatch: Dispatch) {
+
+        val builder =
+            layoutInflater.inflate(R.layout.dialog_choose_external_weigher_layout, null)
+
+        val tilWeighingDate = builder.findViewById<TextInputLayout>(R.id.text_input_layout_choose_external_weigher_date)
+        val etWeighingDate = builder.findViewById<TextInputEditText>(R.id.choose_external_weigher_date)
+        val rvExternalWeighers = builder.findViewById<RecyclerView>(R.id.rv_external_weighers)
+        val btnCancelExternalWeighers = builder.findViewById<Button>(R.id.choose_external_weigher_cancel_btn)
+        val btnSubmitExternalWeighers = builder.findViewById<Button>(R.id.choose_external_weigher_submit_btn)
+
+
+        val layoutManager = LinearLayoutManager(requireContext())
+        rvExternalWeighers.layoutManager = layoutManager
+        rvExternalWeighers.addItemDecoration(
+            DividerItemDecoration(
+                requireContext(),
+                layoutManager.orientation
+            )
+        )
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(builder)
+            .setCancelable(true)
+            .create()
+
+
+        dialog.show()
+
+        var selectedWeigher: String = ""
+        var weighingDate: String
+
+
+        val externalWeighers =
+            Common.userCollectionRef.whereEqualTo("role", resources.getString(R.string.weigher))
+        val options = FirestoreRecyclerOptions.Builder<UserData>()
+            .setQuery(externalWeighers, UserData::class.java).build()
+        try {
+            externalWeighersAdapter = object :
+                FirestoreRecyclerAdapter<UserData, ChooseExternalWeighersAdapter>(options) {
+                override fun onCreateViewHolder(
+                    parent: ViewGroup,
+                    viewType: Int
+                ): ChooseExternalWeighersAdapter {
+                    val itemView = LayoutInflater.from(parent.context)
+                        .inflate(R.layout.item_external_weighers_layout, parent, false)
+                    return ChooseExternalWeighersAdapter(itemView)
+                }
+
+                override fun onBindViewHolder(
+                    holder: ChooseExternalWeighersAdapter,
+                    position: Int,
+                    model: UserData
+                ) {
+
+
+                    holder.externalWeigherName.text = model.fullName
+                    holder.externalWeigherPrice.text = resources.getString(R.string.weighing_cost, model.weigherCost)
+
+                    holder.itemView.setOnClickListener {
+                       it.setBackgroundColor(resources.getColor(R.color.primary_faded))
+                       holder.externalWeigherItemImage.setImageResource(R.drawable.ic_selected)
+                       selectedWeigher = model.userId
+                    }
+
+                }
+
+            }
+
+        } catch (e: Exception) {
+            requireActivity().toast(e.message.toString())
+        }
+        externalWeighersAdapter?.startListening()
+        rvExternalWeighers.adapter = externalWeighersAdapter
+
+        btnSubmitExternalWeighers.setOnClickListener {
+            //change the status and update the existing dispatch
+            weighingDate = etWeighingDate.text.toString()
+            if (weighingDate.isEmpty()){
+                tilWeighingDate.error = resources.getString(R.string.invalid_weighing_date)
+            }else{
+                val status = STATUS_AWAITING_WEIGHER
+                dispatch.weighingDate = weighingDate
+                dispatch.weigher = selectedWeigher
+                dispatch.status = status
+
+
+                Log.d(TAG, "launchAssignStaffDialog: $dispatch")
+                createNewDispatch(dispatch)
+                dialog.dismiss()
+                //updateDispatch(dispatchId, selectedWeigher, weighingDate, status, dialog)
+            }
+        }
+
+        etWeighingDate.setOnFocusChangeListener { v, hasFocus ->
+            val packageWeighingDateLayout = v as TextInputEditText
+            weighingDate = packageWeighingDateLayout.text.toString().trim()
+            if (hasFocus) {
+                showDatePicker(v)
+            } else {
+                if (pickupDate.isEmpty()
+                ) {
+                    tilWeighingDate.error =
+                        resources.getString(R.string.invalid_weighing_date)
+                } else {
+                    tilWeighingDate.error = null
+                }
+            }
+        }
+
+
+        btnCancelExternalWeighers.setOnClickListener {
+            dialog.dismiss()
+        }
+    }
+
+    private fun updateDispatch(
+        dispatchId: String,
+        selectedWeigher: String,
+        weighingDate: String,
+        status: String,
+        dialog: AlertDialog
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val dispatchRef = dispatchCollectionRef.document(dispatchId)
+
+            val updates = hashMapOf<String, Any>(
+                "status" to status,
+                "weigher" to selectedWeigher,
+                "weighingDate" to weighingDate,
+            )
+
+            dispatchRef.update(updates)
+                .addOnSuccessListener {
+                    // Update successful
+                    requireContext().toast(status)
+                    dialog.dismiss()
+                    val navBackToPendingDispatch = CreateNewDispatchDirections.actionCreateNewDispatchToDispatchScreenLanding()
+                    findNavController().navigate(navBackToPendingDispatch)
+                }
+                .addOnFailureListener { e ->
+                    // Handle error
+                    requireContext().toast(e.message.toString())
+                }
+
+
+
+        }
 
     }
 

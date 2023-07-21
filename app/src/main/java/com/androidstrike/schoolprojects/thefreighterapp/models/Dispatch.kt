@@ -1,13 +1,14 @@
 package com.androidstrike.schoolprojects.thefreighterapp.models
 
 data class Dispatch(
-    val status: String = "",
+    var status: String = "",
     val packageType: String = "",
     val weight: String = "",
     val amount: String = "",
     val client: String = "",
     val driver: String = "",
-    val weigher: String = "",
+    var weigher: String = "",
+    var weighingDate: String = "",
     val lastUpdater: String = "",
     val pickupAddress: String = "",
     val pickupProvince: String = "",

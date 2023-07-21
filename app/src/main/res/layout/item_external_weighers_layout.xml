@@ -14,6 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         app:srcCompat="@drawable/ic_unselected"
+        android:id="@+id/iv_choose_external_weigher_item"
         android:contentDescription="@string/select_external_weigher"
         android:padding="@dimen/padding_mini"/>
 
