@@ -11,7 +11,7 @@ object Common {
     const val DISPATCH_REF = "Freighter App Dispatches"
 
 
-    const val DATE_FORMAT = "dd MMM, yyyy"
+    const val DATE_FORMAT = "EEEE, dd MMM, yyyy"
     const val MIN_PASSWORD = 8
 
     const val STATUS_DRAFT = "draft"

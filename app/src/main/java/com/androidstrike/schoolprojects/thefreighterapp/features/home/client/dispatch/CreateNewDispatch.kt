@@ -209,7 +209,7 @@ class CreateNewDispatch : Fragment() {
                 pickupDate = dispatchPickupDate.text.toString().trim()
 
 
-                if (packageTypeOkay && weightOkay && pickupAddressOkay && pickupProvinceOkay && pickupDateOkay && dropOffAddressOkay && dropOffProvinceOkay) {
+                if (packageType.isNotEmpty() && weight.isNotEmpty() && pickupAddress.isNotEmpty() && pickupProvince.isNotEmpty() && pickupDate.isNotEmpty() && dropOffAddress.isNotEmpty() && dropOffProvince.isNotEmpty()) {
 
                     val newDispatch = Dispatch(
                         packageType = packageType,

@@ -5,10 +5,11 @@
     android:layout_height="match_parent"
     tools:context=".features.home.client.dispatch.pending.PendingDispatch">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/item_ongoing_dispatch_layout"
+        android:id="@+id/rv_ongoing_dispatch_list"
+         />
 
 </FrameLayout>

@@ -1,6 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/padding_mini"
+    xmlns:tools="http://schemas.android.com/tools">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_date_created"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/padding_mini"
+            android:layout_marginTop="@dimen/padding_mini"
+            android:layout_marginEnd="@dimen/padding_mini"
+            android:layout_marginBottom="@dimen/padding_mini"
+            android:padding="@dimen/padding_mini"
+            tools:text="@tools:sample/date/ddmmyy" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:textStyle="italic"
+            tools:text="awaiting driver"
+            android:padding="@dimen/padding_mini"
+            android:id="@+id/tv_dispatch_status"
+            android:layout_margin="@dimen/padding_mini"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_dispatch_destination"
+            android:layout_below="@id/tv_date_created"
+            tools:text="@string/tv_dispatch_destination"
+            android:padding="@dimen/padding_mini"
+            android:layout_margin="@dimen/padding_mini"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_dispatch_driver_name"
+            android:layout_below="@id/tv_dispatch_destination"
+            tools:text="@string/no_driver"
+            android:padding="@dimen/padding_mini"
+            android:layout_margin="@dimen/padding_mini"/>
+
+    </RelativeLayout>
+
+</com.google.android.material.card.MaterialCardView>
