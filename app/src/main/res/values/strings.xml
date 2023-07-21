@@ -77,7 +77,7 @@
     <string name="invalid_date_of_birth">Date of birth is invalid</string>
     <string name="missing_fields">Some fields are missing</string>
     <string name="register_vehicle_title">Register Vehicle</string>
-    <string name="register_vehicle_subtitle">Enter details of your frieghter vehicle</string>
+    <string name="register_vehicle_subtitle">Enter details of your freighter vehicle</string>
     <string name="register_vehicle_plate_number">Enter vehicle plate number</string>
     <string name="register_driver_license_number">Enter your license number</string>
     <string name="location_one">Choose Freight Coverage 1</string>
@@ -98,4 +98,23 @@
     <string name="phone_verification_title">2 FA</string>
     <string name="weigher_set_price_subtitle">Set your charge (per pound)</string>
     <string name="set_weigher_charge">Enter charge (€)</string>
+    <string name="invalid_date">Pickup date required</string>
+    <string name="invalid_province">Pickup province required</string>
+
+    <string-array name="dispatch_tab_titles">
+        <item>Pending</item>
+        <item>Concluded</item>
+    </string-array>
+
+
+    <string-array name="package_types">
+        <item>Carton – Card / Fiber Board Boxes</item>
+        <item>Bagged Cargo</item>
+        <item>Wooden Cases</item>
+        <item>Wooden Crates</item>
+        <item>Steel Drums</item>
+        <item>Bales</item>
+        <item>Palletizing Cargo</item>
+        <item>Container</item>
+    </string-array>
 </resources>

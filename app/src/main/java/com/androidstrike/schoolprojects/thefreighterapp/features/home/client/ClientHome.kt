@@ -58,12 +58,13 @@ class ClientHome : Fragment() {
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.navigation_dispatch, R.id.navigation_wallet, R.id.navigation_profile
-            )
-        )
-        (activity as AppCompatActivity).setupActionBarWithNavController(navController, appBarConfiguration)
+//        val appBarConfiguration = AppBarConfiguration(
+//            setOf(
+//                R.id.navigation_dispatch, R.id.navigation_wallet, R.id.navigation_profile
+//            )
+//        )
+        //(activity as AppCompatActivity).setupActionBarWithNavController(navController, appBarConfiguration)
+
     }
 
 

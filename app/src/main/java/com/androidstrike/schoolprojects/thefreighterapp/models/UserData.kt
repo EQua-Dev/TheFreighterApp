@@ -1,5 +1,9 @@
 package com.androidstrike.schoolprojects.thefreighterapp.models
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class UserData(
     val userId: String = "",
     val fullName: String = "",
@@ -19,4 +23,4 @@ data class UserData(
     val driverContactPersonCity: String = "",
     val driverContactPersonCountry: String = "",
     val weigherCost: String = ""
-)
+): Parcelable

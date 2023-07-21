@@ -3,21 +3,36 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottom_nav_graph"
-    app:startDestination="@id/dispatchScreenLanding">
+    app:startDestination="@id/navigation_dispatch">
 
     <fragment
-        android:id="@+id/dispatchScreenLanding"
+        android:id="@+id/navigation_dispatch"
         android:name="com.androidstrike.schoolprojects.thefreighterapp.features.home.client.dispatch.DispatchScreenLanding"
         android:label="fragment_dispatch_screen_landing"
-        tools:layout="@layout/fragment_dispatch_screen_landing" />
+        tools:layout="@layout/fragment_dispatch_screen_landing" >
+        <action
+            android:id="@+id/action_dispatchScreenLanding_to_createNewDispatch"
+            app:destination="@id/createNewDispatch" />
+    </fragment>
     <fragment
-        android:id="@+id/profile"
+        android:id="@+id/navigation_profile"
         android:name="com.androidstrike.schoolprojects.thefreighterapp.features.home.client.profile.Profile"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
     <fragment
-        android:id="@+id/wallet"
+        android:id="@+id/navigation_wallet"
         android:name="com.androidstrike.schoolprojects.thefreighterapp.features.home.client.wallet.Wallet"
         android:label="fragment_wallet"
         tools:layout="@layout/fragment_wallet" />
+    <fragment
+        android:id="@+id/createNewDispatch"
+        android:name="com.androidstrike.schoolprojects.thefreighterapp.features.home.client.dispatch.CreateNewDispatch"
+        android:label="CreateNewDispatch" >
+        <action
+            android:id="@+id/action_createNewDispatch_to_dispatchScreenLanding"
+            app:destination="@id/navigation_dispatch" />
+        <argument
+            android:name="loggedInUser"
+            app:argType="com.androidstrike.schoolprojects.thefreighterapp.models.UserData" />
+    </fragment>
 </navigation>

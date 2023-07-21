@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:padding="@dimen/padding_mini">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
 
     <TextView
@@ -24,6 +28,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/new_dispatch_request_form"
             android:orientation="vertical"
+            android:layout_centerInParent="true"
             android:layout_below="@+id/tv_create_dispatch_title">
 
 
@@ -33,8 +38,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/padding_mini"
-                android:layout_marginEnd="@dimen/padding_mini"
-                android:padding="@dimen/padding_mini">
+                android:layout_marginEnd="@dimen/padding_mini">
 
                 <AutoCompleteTextView
                     android:id="@+id/new_dispatch_choose_package_type"
@@ -43,7 +47,7 @@
                     android:hint="@string/new_dispatch_choose_package_type"
                     android:importantForAutofill="no"
                     android:inputType="textPersonName"
-                    android:padding="@dimen/padding_mini" />
+                    />
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
@@ -95,8 +99,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/padding_mini"
                 android:layout_marginEnd="@dimen/padding_mini"
-                android:hint="@string/dispatch_pickup_province"
-                android:padding="@dimen/padding_mini">
+                android:hint="@string/dispatch_pickup_province">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/dispatch_pickup_province"
@@ -108,25 +111,22 @@
                     android:labelFor="@id/dispatch_pickup_province" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/text_input_layout_dispatch_pickup_country"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@string/dispatch_pickup_country"
                 android:layout_marginStart="@dimen/padding_mini"
-                android:layout_marginEnd="@dimen/padding_mini"
-                android:hint="@string/dispatch_pickup_country"
-                android:padding="@dimen/padding_mini">
+                />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/dispatch_pickup_country"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@string/dispatch_pickup_country"
-                    android:importantForAutofill="no"
-                    android:inputType="text"
-                    android:labelFor="@id/dispatch_pickup_country" />
-            </com.google.android.material.textfield.TextInputLayout>
+            <com.hbb20.CountryCodePicker
+                android:id="@+id/dispatch_pickup_country"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:ccp_showFullName="true"
+                app:ccp_showPhoneCode="false"
+                app:ccp_showNameCode="false"
+                app:ccp_textGravity="LEFT"
+                app:ccp_defaultNameCode="IE"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/text_input_layout_dispatch_drop_off_address"
@@ -135,8 +135,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/padding_mini"
                 android:layout_marginEnd="@dimen/padding_mini"
-                android:hint="@string/dispatch_drop_off_address"
-                android:padding="@dimen/padding_mini">
+                android:hint="@string/dispatch_drop_off_address">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/dispatch_drop_off_address"
@@ -155,8 +154,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/padding_mini"
                 android:layout_marginEnd="@dimen/padding_mini"
-                android:hint="@string/dispatch_drop_off_province"
-                android:padding="@dimen/padding_mini">
+                android:hint="@string/dispatch_drop_off_province">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/dispatch_drop_off_province"
@@ -168,25 +166,21 @@
                     android:labelFor="@id/dispatch_drop_off_province" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/text_input_layout_dispatch_drop_off_country"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/padding_mini"
-                android:layout_marginEnd="@dimen/padding_mini"
-                android:hint="@string/dispatch_drop_off_country"
-                android:padding="@dimen/padding_mini">
+                android:text="@string/dispatch_drop_off_country"
+                android:layout_marginStart="@dimen/padding_mini"/>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/dispatch_drop_off_country"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@string/dispatch_drop_off_country"
-                    android:importantForAutofill="no"
-                    android:inputType="text"
-                    android:labelFor="@id/dispatch_drop_off_country" />
-            </com.google.android.material.textfield.TextInputLayout>
+            <com.hbb20.CountryCodePicker
+                android:id="@+id/dispatch_drop_off_country"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:ccp_showFullName="true"
+                app:ccp_showPhoneCode="false"
+                app:ccp_showNameCode="false"
+                app:ccp_textGravity="LEFT"
+                app:ccp_defaultNameCode="IE"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -203,7 +197,7 @@
                     android:layout_marginEnd="@dimen/padding_mini"
                     android:layout_weight="6.5"
                     android:hint="@string/dispatch_package_weight"
-                    android:padding="@dimen/padding_mini">
+                    >
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/dispatch_package_weight"
@@ -219,10 +213,8 @@
                     android:id="@+id/text_dispatch_package_weight_contractors"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/padding_mini"
                     android:layout_gravity="center"
                     android:layout_weight="1.5"
-                    android:padding="@dimen/padding_mini"
                     android:textAlignment="center"
                     android:text="@string/dispatch_package_weight_contractors"
                     android:textColor="@color/primary"
@@ -238,8 +230,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/padding_mini"
                 android:layout_marginEnd="@dimen/padding_mini"
-                android:hint="@string/dispatch_pickup_date"
-                android:padding="@dimen/padding_mini">
+                android:hint="@string/dispatch_pickup_date">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/dispatch_pickup_date"
@@ -270,7 +261,6 @@
             android:layout_marginEnd="@dimen/margin_midi"
             android:layout_marginBottom="@dimen/margin_midi"
             android:backgroundTint="@color/reject"
-            android:padding="@dimen/padding_mini"
             android:text="@string/new_dispatch_cancel_btn"
             app:cornerRadius="@dimen/margin_mini" />
 
@@ -284,7 +274,6 @@
             android:layout_marginEnd="@dimen/margin_midi"
             android:layout_marginBottom="@dimen/margin_midi"
             android:backgroundTint="@color/neutral"
-            android:padding="@dimen/padding_mini"
             android:text="@string/new_dispatch_save_btn"
             app:cornerRadius="@dimen/margin_mini" />
 
@@ -298,13 +287,12 @@
             android:layout_marginEnd="@dimen/margin_midi"
             android:layout_marginBottom="@dimen/margin_midi"
             android:backgroundTint="@color/primary"
-            android:padding="@dimen/padding_mini"
             android:text="@string/new_dispatch_submit_btn"
             app:cornerRadius="@dimen/margin_mini" />
 
 
     </LinearLayout>
 
+    </RelativeLayout>
 
-
-</RelativeLayout>
+</androidx.core.widget.NestedScrollView>

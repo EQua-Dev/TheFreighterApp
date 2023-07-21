@@ -26,21 +26,22 @@ class SplashScreen : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         with(binding) {
             txtSplash.animate().setDuration(2000).alpha(1f).withEndAction {
 
-//
-//                if (auth.currentUser != null) {
-//                    // User is logged in
-//                    // Perform necessary actions
-                    val navToHome = SplashScreenDirections.actionSplashScreenToIntroScreen()
+
+                if (auth.currentUser != null) {
+                    // User is logged in
+                    // Perform necessary actions
+                    val navToHome = SplashScreenDirections.actionSplashScreenToClientHome(resources.getString(R.string.client))
                     findNavController().navigate(navToHome)
-//                } else {
+                } else {
                     // User is not logged in
                     // Redirect to login screen or perform other actions
-//                    val navToSignIn = SplashScreenDirections.actionSplashScreenToSignIn()
-//                    findNavController().navigate(navToSignIn)
-            //    }
+                    val navToSignIn = SplashScreenDirections.actionSplashScreenToIntroScreen()
+                    findNavController().navigate(navToSignIn)
+                }
 
 
             }

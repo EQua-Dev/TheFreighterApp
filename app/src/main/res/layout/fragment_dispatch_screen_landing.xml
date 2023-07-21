@@ -6,6 +6,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".features.home.client.dispatch.DispatchScreenLanding">
 
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/dispatch_base_tab_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="6dp"
+        android:minHeight="?attr/actionBarSize"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:tabTextAppearance="@style/TabTextAppearance" />
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/dispatch_view_pager"
+            android:padding="@dimen/padding_mini"
+            android:layout_below="@id/dispatch_base_tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent" />
+
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -13,15 +33,8 @@
         android:layout_alignParentEnd="true"
         android:backgroundTint="@color/primary"
         app:srcCompat="@drawable/ic_add"
-        android:id="@+id/add_dispatch"
+        android:id="@+id/fab_add_dispatch"
         android:layout_margin="@dimen/margin_maxi"/>
-
-
-
-
-
-
-
 
 
 
