@@ -111,6 +111,8 @@
     <string name="negotiation_zero">N0</string>
     <string name="add_dispatch">Create new dispatch</string>
     <string name="complete_draft">Complete draft</string>
+    <string name="package_weight">Package weight (kg)</string>
+    <string name="waiting_for_weight">Waiting for weigher to add weight</string>
 
     <string-array name="dispatch_tab_titles">
         <item>Pending</item>

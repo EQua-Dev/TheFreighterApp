@@ -5,12 +5,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.androidstrike.schoolprojects.thefreighterapp.R
 import com.androidstrike.schoolprojects.thefreighterapp.databinding.FragmentPendingDispatchBinding
+import com.androidstrike.schoolprojects.thefreighterapp.features.auth.RegisterDirections
 import com.androidstrike.schoolprojects.thefreighterapp.features.home.client.dispatch.DispatchScreenLandingDirections
 import com.androidstrike.schoolprojects.thefreighterapp.models.Dispatch
 import com.androidstrike.schoolprojects.thefreighterapp.models.UserData
@@ -25,12 +30,15 @@ import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.STATUS_NEGO
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.STATUS_PENDING_DRIVER
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.STATUS_RATED
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.dispatchCollectionRef
+import com.androidstrike.schoolprojects.thefreighterapp.utils.enable
 import com.androidstrike.schoolprojects.thefreighterapp.utils.getDate
 import com.androidstrike.schoolprojects.thefreighterapp.utils.hideProgress
 import com.androidstrike.schoolprojects.thefreighterapp.utils.showProgress
 import com.androidstrike.schoolprojects.thefreighterapp.utils.toast
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -208,7 +216,57 @@ class PendingDispatch : Fragment() {
             STATUS_AWAITING_WEIGHER -> {
                 //open dialog for weigher to input the weight
                 if (model.weigher == loggedUser.userId){
+                    val builder =
+                        layoutInflater.inflate(R.layout.set_weigher_charge_dialog, null)
 
+                    val etPackageWeight = builder.findViewById<TextInputEditText>(R.id.set_weigher_charge)
+                    val tilPackageWeight = builder.findViewById<TextInputLayout>(R.id.text_input_layout_weigher_charge)
+                    val weigherChargeTitle = builder.findViewById<TextView>(R.id.weigher_set_price_subtitle)
+
+                    weigherChargeTitle.text = resources.getString(R.string.dispatch_package_weight)
+                    tilPackageWeight.setHint(resources.getString(R.string.package_weight))
+
+
+                    val btnContinue =
+                        builder.findViewById<Button>(R.id.set_weigher_charge_btn)
+
+                    val dialog = AlertDialog.Builder(requireContext())
+                        .setView(builder)
+                        .setCancelable(false)
+                        .create()
+
+                    btnContinue.enable(false)
+
+                    etPackageWeight.addTextChangedListener {
+                        val packageWeight = it.toString().trim()
+                        btnContinue.apply {
+                            enable(packageWeight.isNotEmpty())
+                            setOnClickListener {
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    val dispatchCollectionRef =
+                                        dispatchCollectionRef.document(model.dispatchId)
+
+                                    val updates = hashMapOf<String, Any>(
+                                        "status" to STATUS_PENDING_DRIVER,
+                                        "weight" to packageWeight,
+                                        "dateWeighed" to System.currentTimeMillis().toString()
+                                    )
+
+                                    dispatchCollectionRef.update(updates).addOnSuccessListener {
+                                        hideProgress()
+                                        dialog.dismiss()
+                                        getRealtimePendingDispatch(loggedUser)
+
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+
+                    dialog.show()
+                }else{
+                    requireContext().toast(resources.getString(R.string.waiting_for_weight))
                 }
             }
 
