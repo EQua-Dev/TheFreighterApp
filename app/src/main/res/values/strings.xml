@@ -113,6 +113,14 @@
     <string name="complete_draft">Complete draft</string>
     <string name="package_weight">Package weight (kg)</string>
     <string name="waiting_for_weight">Waiting for weigher to add weight</string>
+    <string name="time_elapsed">This request is no longer available as the time has elapsed</string>
+    <string name="driver_pickup_date">Pickup Date: %s</string>
+    <string name="driver_pickup_package_type">Package Type: %s (%skg)</string>
+    <string name="driver_pickup_address">Pickup Address (From):</string>
+    <string name="driver_drop_off_address">Drop Of Address (To):</string>
+    <string name="driver_interested_text">Interested</string>
+    <string name="driver_not_interested_text">Not Interested</string>
+    <string name="dispatch_detail_address">%s, %s, %s</string>
 
     <string-array name="dispatch_tab_titles">
         <item>Pending</item>

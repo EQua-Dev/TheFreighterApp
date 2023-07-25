@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.addTextChangedListener
@@ -33,8 +34,10 @@ import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.dispatchCol
 import com.androidstrike.schoolprojects.thefreighterapp.utils.enable
 import com.androidstrike.schoolprojects.thefreighterapp.utils.getDate
 import com.androidstrike.schoolprojects.thefreighterapp.utils.hideProgress
+import com.androidstrike.schoolprojects.thefreighterapp.utils.isUpToTenMinutes
 import com.androidstrike.schoolprojects.thefreighterapp.utils.showProgress
 import com.androidstrike.schoolprojects.thefreighterapp.utils.toast
+import com.androidstrike.schoolprojects.thefreighterapp.utils.visible
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.material.textfield.TextInputEditText
@@ -249,7 +252,8 @@ class PendingDispatch : Fragment() {
                                     val updates = hashMapOf<String, Any>(
                                         "status" to STATUS_PENDING_DRIVER,
                                         "weight" to packageWeight,
-                                        "dateWeighed" to System.currentTimeMillis().toString()
+                                        "dateWeighed" to System.currentTimeMillis().toString(),
+                                        "statusChangeTime" to System.currentTimeMillis().toString()
                                     )
 
                                     dispatchCollectionRef.update(updates).addOnSuccessListener {
@@ -274,8 +278,65 @@ class PendingDispatch : Fragment() {
                 //display dialog to select desired driver and begin negotiation.
                 when (loggedUser.role) {
                     resources.getString(R.string.driver) -> {
-                        //if (current time - model.statusChangeTime is equal or greater than 10 minutes){
-                        // and if that time has elapsed, if there is any driver, they are told they cannot indicate anymore
+                        if (!isUpToTenMinutes(model.statusChangeTime.toLong())){// && model.interestedDrivers.isNotEmpty()){
+                            //if (current time - model.statusChangeTime is equal or greater than 10 minutes){
+                            // and if that time has elapsed, if there is any driver, they are told they cannot indicate anymore
+                            Log.d(TAG, "launchDispatchDetailDialog: ${model.statusChangeTime}")
+
+                            requireContext().toast(resources.getString(R.string.time_elapsed))
+                        }else{
+                            //display the dialog for driver to indicate interest or not
+                            val builder =
+                                layoutInflater.inflate(R.layout.custom_driver_indicate_interest_dialog, null)
+
+                            val tvDispatchPickUpDate = builder.findViewById<TextView>(R.id.driver_interest_dialog_pickup_date)
+                            val tvDispatchWeight = builder.findViewById<TextView>(R.id.driver_interest_dialog_pickup_package_type)
+                            val tvDispatchPickUpAddress = builder.findViewById<TextView>(R.id.driver_interest_dialog_pickup_address_text)
+                            val tvDispatchDropOffAddress = builder.findViewById<TextView>(R.id.driver_interest_dialog_drop_off_address_text)
+                            val cbDriverInterested = builder.findViewById<CheckBox>(R.id.driver_interest_dialog_interested_checkbox)
+                            val tilDriverCharge = builder.findViewById<TextInputLayout>(R.id.text_input_layout_driver_charge)
+                            val etDriverCharge = builder.findViewById<TextInputEditText>(R.id.set_driver_charge)
+
+                            val tvDriverNotInterested = builder.findViewById<TextView>(R.id.driver_interest_dialog_not_interested_text)
+                            val tvSubmitDriverInterested = builder.findViewById<TextView>(R.id.driver_interest_dialog_interested_submit_text)
+
+                            tvDispatchPickUpDate.text = resources.getString(R.string.driver_pickup_date, model.pickupDate)
+                            tvDispatchWeight.text = resources.getString(R.string.driver_pickup_package_type, model.packageType, model.weight)
+                            tvDispatchPickUpAddress.text = resources.getString(R.string.dispatch_detail_address, model.pickupAddress, model.pickupProvince, model.pickupCountry)
+                            tvDispatchDropOffAddress.text = resources.getString(R.string.dispatch_detail_address, model.dropOffAddress, model.dropOffProvince, model.dropOffCountry)
+
+                            var driverCharge = ""
+
+                            tvSubmitDriverInterested.visible(false)
+                            tilDriverCharge.enable(false)
+
+                            cbDriverInterested.setOnCheckedChangeListener { buttonView, isChecked ->
+                                if (isChecked) {
+                                    tilDriverCharge.enable(true)
+                                    tvDriverNotInterested.visible(false)
+                                    etDriverCharge.addTextChangedListener {
+                                        driverCharge = it.toString().trim()
+                                        tvSubmitDriverInterested.apply {
+                                            visible(driverCharge.isNotEmpty())
+                                            setOnClickListener {
+                                                //add the driver and his price to the dispatch
+                                                requireContext().toast("${loggedUser.fullName}, $driverCharge")
+                                            }
+                                        }
+                                    }
+                                }else{
+                                    tilDriverCharge.enable(false)
+                                    tvDriverNotInterested.visible(true)
+                                    tvSubmitDriverInterested.visible(false)
+                            }
+                        }
+                            val dialog = AlertDialog.Builder(requireContext())
+                                .setView(builder)
+                                .setCancelable(false)
+                                .create()
+
+                            dialog.show()
+                        }
 
                         // }else{
                         //if(model.interestedDrivers.isEmpty()){

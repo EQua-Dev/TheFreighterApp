@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_margin="@dimen/margin_mini">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/driver_pickup_date"
+        android:padding="@dimen/padding_mini"
+        android:id="@+id/driver_interest_dialog_pickup_date"/>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/driver_pickup_package_type"
+        android:padding="@dimen/padding_mini"
+        android:id="@+id/driver_interest_dialog_pickup_package_type"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/driver_pickup_address"
+        android:padding="@dimen/padding_mini"
+        android:id="@+id/driver_interest_dialog_pickup_address"/>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="1001 Broadville Way, Glassgow, Ireland"
+        android:padding="@dimen/padding_mini"
+        android:id="@+id/driver_interest_dialog_pickup_address_text"/>
+
+     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/driver_drop_off_address"
+        android:padding="@dimen/padding_mini"
+        android:id="@+id/driver_interest_dialog_drop_off_address"/>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Old Trafford, Manchester, Great Britain"
+        android:padding="@dimen/padding_mini"
+        android:id="@+id/driver_interest_dialog_drop_off_address_text"/>
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/driver_interested_text"
+        android:padding="@dimen/padding_mini"
+        android:textColor="#29B6F6"
+        android:textStyle="bold"
+        android:id="@+id/driver_interest_dialog_interested_checkbox"/>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_layout_driver_charge"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:hint="@string/set_weigher_charge">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/set_driver_charge"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/set_weigher_charge"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:maxLength="6"
+            android:labelFor="@id/set_weigher_charge" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_mini"
+        android:orientation="horizontal"
+        android:layout_gravity="end">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="@string/driver_not_interested_text"
+            android:padding="@dimen/padding_mini"
+            android:id="@+id/driver_interest_dialog_not_interested_text"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="@string/new_dispatch_submit_btn"
+            android:textStyle="bold"
+            tools:visibility="gone"
+            android:layout_margin="@dimen/margin_mini"
+            android:textColor="@color/primary"
+            android:padding="@dimen/padding_mini"
+            android:id="@+id/driver_interest_dialog_interested_submit_text"/>
+
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>
