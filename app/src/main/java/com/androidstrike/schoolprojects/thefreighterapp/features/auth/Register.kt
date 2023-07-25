@@ -199,7 +199,7 @@ class Register : Fragment() {
                 userPhoneNumber = "$userCountryCode${registerCustomerPhone.text.toString().trim()}"
                 userPassword = registerCustomerPassword.text.toString().trim()
                 Log.d(TAG, "userFullName: $userFullName")
-                if (usernameOkay && userEmailOkay && userPhoneNumberOkay && userDateOfBirthOkay && userPasswordOkay && userConfirmPasswordOkay){
+                if (userFullName.isNotEmpty() && userEmail.isNotEmpty() && userPhoneNumber.isNotEmpty() && userDateOfBirth.isNotEmpty() && userPassword.isNotEmpty() && userConfirmPassword.isNotEmpty()){
 
                     clientUserData = UserData(
                         fullName = userFullName,

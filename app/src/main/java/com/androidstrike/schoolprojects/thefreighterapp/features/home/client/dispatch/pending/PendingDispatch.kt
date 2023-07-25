@@ -207,6 +207,9 @@ class PendingDispatch : Fragment() {
         when (model.status) {
             STATUS_AWAITING_WEIGHER -> {
                 //open dialog for weigher to input the weight
+                if (model.weigher == loggedUser.userId){
+
+                }
             }
 
             STATUS_PENDING_DRIVER -> {
