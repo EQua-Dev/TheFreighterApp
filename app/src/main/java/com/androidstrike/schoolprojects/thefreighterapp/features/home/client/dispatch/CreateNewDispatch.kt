@@ -49,6 +49,7 @@ class CreateNewDispatch : Fragment() {
 
     private val args: CreateNewDispatchArgs by navArgs()
     private lateinit var loggedInUser: UserData
+    private lateinit var dispatchId: String
 
     private var externalWeighersList: MutableList<UserData> = mutableListOf()
 
@@ -70,6 +71,7 @@ class CreateNewDispatch : Fragment() {
     private lateinit var pickupProvince: String
     private var pickupProvinceOkay = false
     private lateinit var pickupCountry: String
+    private lateinit var pickupCountryCode: String
     private lateinit var pickupDate: String
     private var pickupDateOkay = false
     private lateinit var dropOffAddress: String
@@ -77,6 +79,7 @@ class CreateNewDispatch : Fragment() {
     private lateinit var dropOffProvince: String
     private var dropOffProvinceOkay = false
     private lateinit var dropOffCountry: String
+    private lateinit var dropOffCountryCode: String
 
     private val calendar = Calendar.getInstance()
 
@@ -99,16 +102,63 @@ class CreateNewDispatch : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        loggedInUser = args.loggedInUser
+        loggedInUser = args.loggedUser
+
+        if (args.dispatchId.isNotEmpty()) {
+            dispatchId = args.dispatchId
+            fetchDispatchDetails(dispatchId)
+        } else {
+            dispatchId = UUID.randomUUID().toString()
+            val dispatch = Dispatch(
+                dispatchId = dispatchId
+            )
+            loadView(dispatch, resources.getString(R.string.add_dispatch))
+
+        }
+
+
+    }
+
+    private fun loadView(dispatch: Dispatch, request: String) {
 
         with(binding) {
 
-            val dispatchId = UUID.randomUUID().toString()
+
 
             val packageTypes = resources.getStringArray(R.array.package_types)
             val packageTypesAdapter =
                 ArrayAdapter(requireContext(), R.layout.drop_down_item, packageTypes)
             newDispatchChoosePackageType.setAdapter(packageTypesAdapter)
+
+            if (request == resources.getString(R.string.complete_draft)){
+                //populate the view with the draft dispatch
+                newDispatchChoosePackageType.setText(dispatch.packageType)
+                dispatchPackageWeight.setText(dispatch.weight)
+                dispatchPickupAddress.setText(dispatch.pickupAddress)
+                dispatchPickupProvince.setText(dispatch.pickupProvince)
+                dispatchDropOffAddress.setText(dispatch.dropOffAddress)
+                dispatchDropOffProvince.setText(dispatch.dropOffProvince)
+                dispatchDropOffCountry.setDefaultCountryUsingNameCode(dispatch.dropOffCountryCode)
+                dispatchPickupDate.setText(dispatch.pickupDate)
+
+//                if (dispatch.pickupCountryCode.isNotEmpty()){
+//                    pickupCountryCode = dispatch.pickupCountryCode
+//                }
+//                else{
+//                    pickupCountryCode = dispatchPickupCountry.defaultCountryNameCode
+//                    pickupCountry = dispatchPickupCountry.defaultCountryName
+//                }
+//                if (dispatch.dropickupCountryCode.isNotEmpty()){
+//                    pickupCountryCode = dispatch.pickupCountryCode
+//                }
+//                else{
+//                    pickupCountryCode = dispatchPickupCountry.defaultCountryNameCode
+//                    pickupCountry = dispatchPickupCountry.defaultCountryName
+//                }
+//                dropOffCountry = dispatchDropOffCountry.defaultCountryName
+//                dropOffCountry = dispatchDropOffCountry.defaultCountryName
+            }
+
 
             dispatchPickupDate.setOnFocusChangeListener { v, hasFocus ->
                 val packagePickUpDateLayout = v as TextInputEditText
@@ -195,6 +245,8 @@ class CreateNewDispatch : Fragment() {
 
 
             pickupCountry = dispatchPickupCountry.defaultCountryName
+            pickupCountryCode = dispatchPickupCountry.defaultCountryNameCode
+            dropOffCountry = dispatchDropOffCountry.defaultCountryName
             dropOffCountry = dispatchDropOffCountry.defaultCountryName
 
 
@@ -285,7 +337,8 @@ class CreateNewDispatch : Fragment() {
                         dateCreated = System.currentTimeMillis().toString()
                     )
 
-                    launchExternalContractorsDialog(newDispatch)                } else {
+                    launchExternalContractorsDialog(newDispatch)
+                } else {
                     requireContext().toast(resources.getString(R.string.fill_details_before_weighing))
                 }
             }
@@ -325,13 +378,36 @@ class CreateNewDispatch : Fragment() {
                     pickupDate = pickupDate,
                     dispatchId = System.currentTimeMillis().toString(),
                     dateCreated = System.currentTimeMillis().toString()
-                    )
+                )
                 createNewDispatch(newDispatchDraft)
             }
 
         }
 
+    }
 
+    private fun fetchDispatchDetails(dispatchId: String) {
+
+        requireContext().showProgress()
+        var draftDispatch = Dispatch()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val dispatchRef = dispatchCollectionRef.document(dispatchId)
+                .addSnapshotListener { value, error ->
+                    if (error != null) {
+                        requireContext().toast(error.message.toString())
+                        return@addSnapshotListener
+                    }
+                    if (value != null && value.exists()) {
+                        draftDispatch = value.toObject(Dispatch::class.java)!!
+                        //call the function to set up the ui
+                        hideProgress()
+                        loadView(draftDispatch, resources.getString(R.string.complete_draft))
+
+                    }
+
+                }
+        }
     }
 
     private fun launchExternalContractorsDialog(dispatch: Dispatch) {
@@ -353,16 +429,20 @@ class CreateNewDispatch : Fragment() {
         }
     }
 
-    private fun launchAssignStaffDialog(dispatch: Dispatch) {
+    private fun launchAssignStaffDialog(withWeigherDispatch: Dispatch) {
 
         val builder =
             layoutInflater.inflate(R.layout.dialog_choose_external_weigher_layout, null)
 
-        val tilWeighingDate = builder.findViewById<TextInputLayout>(R.id.text_input_layout_choose_external_weigher_date)
-        val etWeighingDate = builder.findViewById<TextInputEditText>(R.id.choose_external_weigher_date)
+        val tilWeighingDate =
+            builder.findViewById<TextInputLayout>(R.id.text_input_layout_choose_external_weigher_date)
+        val etWeighingDate =
+            builder.findViewById<TextInputEditText>(R.id.choose_external_weigher_date)
         val rvExternalWeighers = builder.findViewById<RecyclerView>(R.id.rv_external_weighers)
-        val btnCancelExternalWeighers = builder.findViewById<Button>(R.id.choose_external_weigher_cancel_btn)
-        val btnSubmitExternalWeighers = builder.findViewById<Button>(R.id.choose_external_weigher_submit_btn)
+        val btnCancelExternalWeighers =
+            builder.findViewById<Button>(R.id.choose_external_weigher_cancel_btn)
+        val btnSubmitExternalWeighers =
+            builder.findViewById<Button>(R.id.choose_external_weigher_submit_btn)
 
 
         val layoutManager = LinearLayoutManager(requireContext())
@@ -410,12 +490,13 @@ class CreateNewDispatch : Fragment() {
 
 
                     holder.externalWeigherName.text = model.fullName
-                    holder.externalWeigherPrice.text = resources.getString(R.string.weighing_cost, model.weigherCost)
+                    holder.externalWeigherPrice.text =
+                        resources.getString(R.string.weighing_cost, model.weigherCost)
 
                     holder.itemView.setOnClickListener {
-                       it.setBackgroundColor(resources.getColor(R.color.primary_faded))
-                       holder.externalWeigherItemImage.setImageResource(R.drawable.ic_selected)
-                       selectedWeigher = model.userId
+                        it.setBackgroundColor(resources.getColor(R.color.primary_faded))
+                        holder.externalWeigherItemImage.setImageResource(R.drawable.ic_selected)
+                        selectedWeigher = model.userId
                     }
 
                 }
@@ -431,17 +512,17 @@ class CreateNewDispatch : Fragment() {
         btnSubmitExternalWeighers.setOnClickListener {
             //change the status and update the existing dispatch
             weighingDate = etWeighingDate.text.toString()
-            if (weighingDate.isEmpty()){
+            if (weighingDate.isEmpty()) {
                 tilWeighingDate.error = resources.getString(R.string.invalid_weighing_date)
-            }else{
+            } else {
                 val status = STATUS_AWAITING_WEIGHER
-                dispatch.weighingDate = weighingDate
-                dispatch.weigher = selectedWeigher
-                dispatch.status = status
+                withWeigherDispatch.weighingDate = weighingDate
+                withWeigherDispatch.weigher = selectedWeigher
+                withWeigherDispatch.status = status
 
 
-                Log.d(TAG, "launchAssignStaffDialog: $dispatch")
-                createNewDispatch(dispatch)
+                Log.d(TAG, "launchAssignStaffDialog: $withWeigherDispatch")
+                createNewDispatch(withWeigherDispatch)
                 dialog.dismiss()
                 //updateDispatch(dispatchId, selectedWeigher, weighingDate, status, dialog)
             }
@@ -490,14 +571,14 @@ class CreateNewDispatch : Fragment() {
                     // Update successful
                     requireContext().toast(status)
                     dialog.dismiss()
-                    val navBackToPendingDispatch = CreateNewDispatchDirections.actionCreateNewDispatchToDispatchScreenLanding()
+                    val navBackToPendingDispatch =
+                        CreateNewDispatchDirections.actionCreateNewDispatchToPendingDispatch()
                     findNavController().navigate(navBackToPendingDispatch)
                 }
                 .addOnFailureListener { e ->
                     // Handle error
                     requireContext().toast(e.message.toString())
                 }
-
 
 
         }
@@ -512,7 +593,8 @@ class CreateNewDispatch : Fragment() {
                 Common.dispatchCollectionRef.document(newDispatch.dispatchId).set(newDispatch)
                     .await()
                 hideProgress()
-                val navBackToDispatch = CreateNewDispatchDirections.actionCreateNewDispatchToDispatchScreenLanding()
+                val navBackToDispatch =
+                    CreateNewDispatchDirections.actionCreateNewDispatchToPendingDispatch()
                 findNavController().navigate(navBackToDispatch)
 
             } catch (e: Exception) {
@@ -523,7 +605,7 @@ class CreateNewDispatch : Fragment() {
             }
         }
 
-        }
+    }
 
     private fun showDatePicker(view: View) {
         val year = calendar.get(Calendar.YEAR)
@@ -555,3 +637,4 @@ class CreateNewDispatch : Fragment() {
     }
 
 }
+

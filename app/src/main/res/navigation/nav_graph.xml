@@ -82,9 +82,6 @@
         <argument
             android:name="role"
             app:argType="string" />
-        <action
-            android:id="@+id/action_clientHome_to_createNewDispatch2"
-            app:destination="@id/createNewDispatch2" />
     </fragment>
     <fragment
         android:id="@+id/registerVehicle"
@@ -130,16 +127,5 @@
         <argument
             android:name="phoneNumber"
             app:argType="string" />
-    </fragment>
-    <fragment
-        android:id="@+id/createNewDispatch2"
-        android:name="com.androidstrike.schoolprojects.thefreighterapp.features.home.client.dispatch.CreateNewDispatch"
-        android:label="CreateNewDispatch" >
-        <action
-            android:id="@+id/action_createNewDispatch2_to_clientHome"
-            app:destination="@id/clientHome" />
-        <argument
-            android:name="loggedUser"
-            app:argType="com.androidstrike.schoolprojects.thefreighterapp.models.UserData" />
     </fragment>
 </navigation>

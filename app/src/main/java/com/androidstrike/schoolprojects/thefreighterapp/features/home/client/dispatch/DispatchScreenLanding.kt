@@ -99,37 +99,6 @@ class DispatchScreenLanding : Fragment() {
                 override fun onTabReselected(tab: TabLayout.Tab) {}
             })
 
-            fabAddDispatch.setOnClickListener {
-                getUser()
-            }
-
-        }
-
-
-    }
-
-    private fun getUser(){
-        var loggedUser = UserData()
-
-        CoroutineScope(Dispatchers.IO).launch {
-            Common.userCollectionRef.document(Common.auth.uid.toString())
-//            Common.userCollectionRef.document("ElE9dfN1rXVaJ0MD8IsJv046BnV2")
-                .addSnapshotListener { value, error ->
-                    if (error != null) {
-                        requireContext().toast(error.message.toString())
-                        return@addSnapshotListener
-                    }
-                    if (value != null && value.exists()) {
-                        loggedUser = value.toObject(UserData::class.java)!!
-                        //binding.fabAddDispatch.setOnClickListener {
-                            val navToNewDispatch = DispatchScreenLandingDirections.actionDispatchScreenLandingToCreateNewDispatch(loggedUser)
-                            findNavController().navigate(navToNewDispatch)
-                        //}
-
-
-                    }
-                }
-//
         }
     }
 

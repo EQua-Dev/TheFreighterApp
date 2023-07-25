@@ -10,10 +10,31 @@
         android:name="com.androidstrike.schoolprojects.thefreighterapp.features.home.client.dispatch.DispatchScreenLanding"
         android:label="fragment_dispatch_screen_landing"
         tools:layout="@layout/fragment_dispatch_screen_landing" >
-        <action
-            android:id="@+id/action_dispatchScreenLanding_to_createNewDispatch"
-            app:destination="@id/createNewDispatch" />
+
+
+        <navigation
+            android:id="@+id/tab_navigation"
+            app:startDestination="@id/pendingDispatch">
+
+            <fragment
+                android:id="@+id/pendingDispatch"
+                android:name="com.androidstrike.schoolprojects.thefreighterapp.features.home.client.dispatch.pending.PendingDispatch"
+                android:label="fragment_pending_dispatch"
+                tools:layout="@layout/fragment_pending_dispatch" >
+
+            </fragment>
+            <fragment
+                android:id="@+id/concludedDispatch"
+                android:name="com.androidstrike.schoolprojects.thefreighterapp.features.home.client.dispatch.concluded.ConcludedDispatch"
+                android:label="fragment_concluded_dispatch"
+                tools:layout="@layout/fragment_concluded_dispatch" />
+
+        </navigation>
+
+
     </fragment>
+
+
     <fragment
         android:id="@+id/navigation_profile"
         android:name="com.androidstrike.schoolprojects.thefreighterapp.features.home.client.profile.Profile"
@@ -27,12 +48,23 @@
     <fragment
         android:id="@+id/createNewDispatch"
         android:name="com.androidstrike.schoolprojects.thefreighterapp.features.home.client.dispatch.CreateNewDispatch"
-        android:label="CreateNewDispatch" >
+        android:label="CreateNewDispatch">
         <action
             android:id="@+id/action_createNewDispatch_to_dispatchScreenLanding"
             app:destination="@id/navigation_dispatch" />
         <argument
-            android:name="loggedInUser"
+            android:name="loggedUser"
             app:argType="com.androidstrike.schoolprojects.thefreighterapp.models.UserData" />
+        <argument
+            android:name="dispatchId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_createNewDispatch_to_pendingDispatch"
+            app:destination="@id/pendingDispatch" />
     </fragment>
+
+    <action
+        android:id="@+id/action_pendingDispatch_to_createNewDispatch"
+        app:destination="@id/createNewDispatch" />
+
 </navigation>
