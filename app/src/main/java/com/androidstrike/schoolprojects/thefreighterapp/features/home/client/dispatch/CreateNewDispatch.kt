@@ -594,7 +594,7 @@ class CreateNewDispatch : Fragment() {
                     .await()
                 hideProgress()
                 val navBackToDispatch =
-                    CreateNewDispatchDirections.actionCreateNewDispatchToPendingDispatch()
+                    CreateNewDispatchDirections.actionCreateNewDispatchToDispatchScreenLanding()
                 findNavController().navigate(navBackToDispatch)
 
             } catch (e: Exception) {
