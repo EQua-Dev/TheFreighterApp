@@ -3,14 +3,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_margin="@dimen/margin_mini">
+    android:padding="@dimen/padding_mini"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:text="@string/tv_dispatch_details_title"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_xl"
+        android:layout_margin="@dimen/padding_mini"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/driver_pickup_date"
         android:padding="@dimen/padding_mini"
+        android:layout_margin="@dimen/padding_mini"
         android:id="@+id/driver_interest_dialog_pickup_date"/>
 
 
@@ -19,6 +29,7 @@
         android:layout_height="wrap_content"
         android:text="@string/driver_pickup_package_type"
         android:padding="@dimen/padding_mini"
+        android:layout_margin="@dimen/padding_mini"
         android:id="@+id/driver_interest_dialog_pickup_package_type"/>
 
     <TextView
@@ -26,6 +37,7 @@
         android:layout_height="wrap_content"
         android:text="@string/driver_pickup_address"
         android:padding="@dimen/padding_mini"
+        android:layout_margin="@dimen/padding_mini"
         android:id="@+id/driver_interest_dialog_pickup_address"/>
 
 
@@ -34,6 +46,7 @@
         android:layout_height="wrap_content"
         tools:text="1001 Broadville Way, Glassgow, Ireland"
         android:padding="@dimen/padding_mini"
+        android:layout_margin="@dimen/padding_mini"
         android:id="@+id/driver_interest_dialog_pickup_address_text"/>
 
      <TextView
@@ -41,6 +54,7 @@
         android:layout_height="wrap_content"
         android:text="@string/driver_drop_off_address"
         android:padding="@dimen/padding_mini"
+         android:layout_margin="@dimen/padding_mini"
         android:id="@+id/driver_interest_dialog_drop_off_address"/>
 
 
@@ -49,6 +63,7 @@
         android:layout_height="wrap_content"
         tools:text="Old Trafford, Manchester, Great Britain"
         android:padding="@dimen/padding_mini"
+        android:layout_margin="@dimen/padding_mini"
         android:id="@+id/driver_interest_dialog_drop_off_address_text"/>
 
     <CheckBox
@@ -56,6 +71,7 @@
         android:layout_height="wrap_content"
         android:text="@string/driver_interested_text"
         android:padding="@dimen/padding_mini"
+        android:layout_margin="@dimen/padding_mini"
         android:textColor="#29B6F6"
         android:textStyle="bold"
         android:id="@+id/driver_interest_dialog_interested_checkbox"/>
@@ -66,6 +82,7 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding_mini"
         android:enabled="false"
         android:hint="@string/set_weigher_charge">
 
@@ -85,6 +102,7 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/margin_mini"
         android:orientation="horizontal"
+        android:layout_margin="@dimen/padding_mini"
         android:layout_gravity="end">
 
 

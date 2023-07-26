@@ -284,7 +284,11 @@ class PendingDispatch : Fragment() {
                             Log.d(TAG, "launchDispatchDetailDialog: ${model.statusChangeTime}")
 
                             requireContext().toast(resources.getString(R.string.time_elapsed))
-                        }else{
+                        }
+                        else if (model.interestedDrivers.keys.contains(loggedUser.userId)){
+                            requireContext().toast(resources.getString(R.string.already_interested))
+                        } else{
+
                             //display the dialog for driver to indicate interest or not
                             val builder =
                                 layoutInflater.inflate(R.layout.custom_driver_indicate_interest_dialog, null)
@@ -307,6 +311,11 @@ class PendingDispatch : Fragment() {
 
                             var driverCharge = ""
 
+                            val dialog = AlertDialog.Builder(requireContext())
+                                .setView(builder)
+                                .setCancelable(false)
+                                .create()
+
                             tvSubmitDriverInterested.visible(false)
                             tilDriverCharge.enable(false)
 
@@ -321,6 +330,27 @@ class PendingDispatch : Fragment() {
                                             setOnClickListener {
                                                 //add the driver and his price to the dispatch
                                                 requireContext().toast("${loggedUser.fullName}, $driverCharge")
+                                                interestedDriversMutableMap = model.interestedDrivers.toMutableMap()
+                                                interestedDriversMutableMap[loggedUser.userId] = driverCharge
+
+                                                CoroutineScope(Dispatchers.IO).launch {
+                                                    val dispatchCollectionRef =
+                                                        dispatchCollectionRef.document(model.dispatchId)
+
+                                                    val updates = hashMapOf<String, Any>(
+                                                        "interestedDrivers" to interestedDriversMutableMap,
+                                                    )
+
+                                                    dispatchCollectionRef.update(updates).addOnSuccessListener {
+                                                        hideProgress()
+                                                        dialog.dismiss()
+                                                        getRealtimePendingDispatch(loggedUser)
+
+                                                    }
+
+                                                }
+                                                //updateDriverCharge(interestedDriversMutableMap)
+
                                             }
                                         }
                                     }
@@ -330,10 +360,11 @@ class PendingDispatch : Fragment() {
                                     tvSubmitDriverInterested.visible(false)
                             }
                         }
-                            val dialog = AlertDialog.Builder(requireContext())
-                                .setView(builder)
-                                .setCancelable(false)
-                                .create()
+
+                            tvDriverNotInterested.setOnClickListener {
+                                dialog.dismiss()
+                            }
+
 
                             dialog.show()
                         }
@@ -435,6 +466,11 @@ class PendingDispatch : Fragment() {
 
             }
         }
+
+    }
+
+    private fun updateDriverCharge(interestedDriversMutableMap: MutableMap<String, String>) {
+
 
     }
 

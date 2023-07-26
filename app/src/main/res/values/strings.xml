@@ -121,6 +121,7 @@
     <string name="driver_interested_text">Interested</string>
     <string name="driver_not_interested_text">Not Interested</string>
     <string name="dispatch_detail_address">%s, %s, %s</string>
+    <string name="already_interested">Already indicated interest</string>
 
     <string-array name="dispatch_tab_titles">
         <item>Pending</item>
