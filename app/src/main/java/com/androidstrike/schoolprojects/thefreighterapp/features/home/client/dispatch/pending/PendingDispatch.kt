@@ -1,5 +1,7 @@
 package com.androidstrike.schoolprojects.thefreighterapp.features.home.client.dispatch.pending
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,16 +9,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.androidstrike.schoolprojects.thefreighterapp.R
 import com.androidstrike.schoolprojects.thefreighterapp.databinding.FragmentPendingDispatchBinding
+import com.androidstrike.schoolprojects.thefreighterapp.features.home.client.dispatch.CreateNewDispatchDirections
 import com.androidstrike.schoolprojects.thefreighterapp.features.home.client.dispatch.DispatchScreenLandingDirections
 import com.androidstrike.schoolprojects.thefreighterapp.models.Dispatch
 import com.androidstrike.schoolprojects.thefreighterapp.models.InterestedDriverDetail
@@ -32,6 +37,7 @@ import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.STATUS_NEGO
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.STATUS_PENDING_DRIVER
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.STATUS_RATED
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.dispatchCollectionRef
+import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.userCollectionRef
 import com.androidstrike.schoolprojects.thefreighterapp.utils.enable
 import com.androidstrike.schoolprojects.thefreighterapp.utils.getDate
 import com.androidstrike.schoolprojects.thefreighterapp.utils.hideProgress
@@ -51,6 +57,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class PendingDispatch : Fragment() {
 
@@ -112,6 +119,8 @@ class PendingDispatch : Fragment() {
                     }
                     if (value != null && value.exists()) {
                         loggedUser = value.toObject(UserData::class.java)!!
+                        if (loggedUser.role != resources.getString(R.string.client))
+                            binding.fabAddDispatch.visible(false)
 
                         if (request == resources.getString(R.string.add_dispatch)) {
                             parentFragment?.let { parentFragment ->
@@ -146,11 +155,12 @@ class PendingDispatch : Fragment() {
             }
 
             resources.getString(R.string.driver) -> {
+                Log.d(TAG, "getRealtimePendingDispatch: ${loggedUser.dispatch.isEmpty()}")
                 pendingDispatches = if (loggedUser.dispatch.isEmpty()) {
                     dispatchCollectionRef
                         .whereEqualTo("status", STATUS_PENDING_DRIVER)
                 } else {
-                    dispatchCollectionRef.whereEqualTo("driver", loggedUser)
+                    dispatchCollectionRef.whereEqualTo("driver", loggedUser.userId)
                         .whereNotEqualTo("status", STATUS_DELIVERED)
                 }
             }
@@ -469,49 +479,15 @@ class PendingDispatch : Fragment() {
             }
 
             STATUS_NEGOTIATING_PRICE -> {
-                if (model.lastUpdater != loggedUser.userId) {
+                if (model.lastUpdater == loggedUser.userId) {
                     //should wait for the other person to say
+                    requireContext().toast(resources.getString(R.string.wait_for_response))
                 } else {
-                    val n0 = resources.getString(R.string.negotiation_zero)
-                    val n1 = resources.getString(R.string.negotiation_one)
-                    val n2 = resources.getString(R.string.negotiation_two)
-                    val n3 = resources.getString(R.string.negotiation_three)
+
+                    launchNegotiationDialog(model, loggedUser)
+
 
                     //tvOriginalAmount.text = model.amount
-                    when (model.negotiationRound) {
-                        n0 -> {
-                            //tvN0Amount is equal to the original amount the driver stated
-                            //tv n2 and n3 are invisible
-                            //while tv n1 is disabled until user clicks to negotiate
-                            //if user clicks accept, the dispatch amount will be set to the n0 amount
-                            //last updater here is null and is set to driver and this will never be the case
-                        }
-
-                        n1 -> {
-                            //means user has given counter price
-                            //last updater here is driver and is set user and this will also most likely never be the case
-                            //tv n1 amount .text = model.negotiationPrice1
-                            // etn1 will be disabled if model.negotiationPrice1 is not empty
-                            //user is to agree or say price
-                            //price is user price
-
-                        }
-
-                        n2 -> {
-                            //most likely where the negotiation dialog is effective
-                            //means that user has set a counter offer to original price and driver is set new one
-                            //driver is to agree to n1 amount or say price
-                            //price is driver counter price
-                            //last updater her is user and is set to driver after update
-                        }
-
-                        n3 -> {
-                            //means that driver has set a new price and user is to set a new one
-                            //if driver is the person here, he is to agree to price or cancel
-                            //
-                            //client is to agree or say price
-                        }
-                    }
                 }
 
             }
@@ -541,6 +517,400 @@ class PendingDispatch : Fragment() {
 
             }
         }
+
+    }
+
+    private fun launchNegotiationDialog(model: Dispatch, loggedUser: UserData) {
+        val builder =
+            layoutInflater.inflate(
+                R.layout.dialog_negotiate_dispatch_price_layout,
+                null
+            )
+
+        val dispatchDriverName =
+            builder.findViewById<TextView>(R.id.dispatch_driver_name)
+        val dispatchDriverPrice =
+            builder.findViewById<TextView>(R.id.dispatch_driver_price)
+        val dispatchPickupDate =
+            builder.findViewById<TextView>(R.id.dispatch_pickup_date)
+        val dispatchCallDriver =
+            builder.findViewById<TextView>(R.id.call_dispatch_driver)
+        val cbClientNegotiate =
+            builder.findViewById<CheckBox>(R.id.cb_negotiate_dispatch_price)
+        val negotiation1Price =
+            builder.findViewById<TextView>(R.id.negotiation_one_price)
+        val etClientCounterPrice1 =
+            builder.findViewById<EditText>(R.id.et_counter_price_one)
+        val negotiation2Price =
+            builder.findViewById<TextView>(R.id.negotiation_two_price)
+        val etClientCounterPrice2 =
+            builder.findViewById<EditText>(R.id.et_counter_price_two)
+        val negotiation3Price =
+            builder.findViewById<TextView>(R.id.negotiation_three_price)
+        val etClientCounterPrice3 =
+            builder.findViewById<EditText>(R.id.et_counter_price_three)
+        val tvNegotiationInfo =
+            builder.findViewById<TextView>(R.id.negotiation_info)
+        val btnCancelNegotiation =
+            builder.findViewById<Button>(R.id.negotiation_cancel_btn)
+        val btnSubmitNegotiation =
+            builder.findViewById<Button>(R.id.negotiation_submit_btn)
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(builder)
+            .setCancelable(false)
+            .create()
+
+        val n0 = resources.getString(R.string.negotiation_zero)
+        val n1 = resources.getString(R.string.negotiation_one)
+        val n2 = resources.getString(R.string.negotiation_two)
+        val n3 = resources.getString(R.string.negotiation_three)
+        val driverDetail = getDispatchDriver(model.driver)
+
+        // TODO:  handle cases of when user unchecks the checkbox to make view states to be how they were
+
+        negotiation1Price.visible(false)
+        negotiation2Price.visible(false)
+        negotiation3Price.visible(false)
+        etClientCounterPrice1.enable(false)
+        etClientCounterPrice2.enable(false)
+        etClientCounterPrice3.enable(false)
+
+        dispatchDriverName.text = driverDetail!!.fullName
+        dispatchDriverPrice.text = model.negotiationPrice0
+        dispatchPickupDate.text = resources.getString(R.string.driver_pickup_date, model.pickupDate)
+        dispatchCallDriver.setOnClickListener {
+            val number = if (loggedUser.role == resources.getString(R.string.client)) {
+                getDispatchDriver(model.driver)!!.phoneNumber
+            } else {
+                getDispatchDriver(model.client)!!.phoneNumber
+            }
+            makeCall(number)
+        }
+
+        var negotiationPrice2 = ""
+        var negotiationPrice3 = ""
+
+        when (model.negotiationRound) {
+            n0 -> {
+                //tvN0Amount is equal to the original amount the driver stated
+                //tv n2 and n3 are invisible
+                //while tv n1 is disabled until user clicks to negotiate
+                //if user clicks accept, the dispatch amount will be set to the n0 amount
+                //last updater here is null and is set to driver and this will never be the case
+            }
+
+            n1 -> {
+
+                //means user has given counter price
+                etClientCounterPrice1.visible(false)
+                negotiation1Price.visible(true)
+                negotiation1Price.text = model.negotiationPrice1
+                if (loggedUser.role == resources.getString(R.string.client)) {
+                    cbClientNegotiate.enable(false)
+                    btnSubmitNegotiation.apply {
+                        text = resources.getString(R.string.okay)
+                        setOnClickListener {
+                            dialog.dismiss()
+                        }
+                    }
+
+                } else {
+                    cbClientNegotiate.setOnCheckedChangeListener { _, isChecked ->
+                        if (isChecked) {
+                            etClientCounterPrice2.enable(true)
+                            btnSubmitNegotiation.enable(false)
+                            etClientCounterPrice2.addTextChangedListener {
+                                negotiationPrice2 = it.toString().trim()
+                                btnSubmitNegotiation.apply {
+                                    enable(negotiationPrice2.isNotEmpty())
+                                    setOnClickListener {
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            val dispatchCollectionRef =
+                                                dispatchCollectionRef.document(model.dispatchId)
+
+                                            val updates = hashMapOf<String, Any>(
+                                                "statusChangeTime" to System.currentTimeMillis()
+                                                    .toString(),
+                                                "lastUpdater" to loggedUser.userId,
+                                                "negotiationRound" to resources.getString(R.string.negotiation_two),
+                                                "negotiationPrice2" to resources.getString(
+                                                    R.string.money_text,
+                                                    negotiationPrice2
+                                                ),
+                                            )
+
+                                            dispatchCollectionRef.update(updates)
+                                                .addOnSuccessListener {
+                                                    hideProgress()
+                                                    dialog.dismiss()
+                                                    requireContext().toast(resources.getString(R.string.update_success))
+                                                    getRealtimePendingDispatch(loggedUser)
+
+                                                }
+
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            btnSubmitNegotiation.apply {
+                                text = resources.getString(R.string.tv_accept_price)
+                                setOnClickListener {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        val dispatchCollectionRef =
+                                            dispatchCollectionRef.document(model.dispatchId)
+
+                                        val updates = hashMapOf<String, Any>(
+                                            "statusChangeTime" to System.currentTimeMillis()
+                                                .toString(),
+                                            "lastUpdater" to loggedUser.userId,
+                                            "status" to STATUS_AWAITING_DRIVER,
+                                            "amount" to model.negotiationPrice1,
+                                        )
+
+                                        dispatchCollectionRef.update(updates)
+                                            .addOnSuccessListener {
+                                                hideProgress()
+                                                requireContext().toast(resources.getString(R.string.update_success))
+                                                dialog.dismiss()
+
+                                            }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                //last updater here is driver and is set user and this will also most likely never be the case
+                //tv n1 amount .text = model.negotiationPrice1
+                // etn1 will be disabled if model.negotiationPrice1 is not empty
+                //user is to agree or say price
+                //price is user price
+
+
+            }
+
+            n2 -> {
+                //means driver has given counter price
+                etClientCounterPrice1.visible(false)
+                negotiation1Price.visible(true)
+                negotiation1Price.text = model.negotiationPrice1
+                etClientCounterPrice2.visible(false)
+                negotiation2Price.visible(true)
+                negotiation2Price.text = model.negotiationPrice2
+                if (loggedUser.role == resources.getString(R.string.driver)) {
+                    cbClientNegotiate.enable(false)
+                    btnSubmitNegotiation.apply {
+                        text = resources.getString(R.string.okay)
+                        setOnClickListener {
+                            dialog.dismiss()
+                        }
+                    }
+
+                } else {
+                    cbClientNegotiate.setOnCheckedChangeListener { _, isChecked ->
+                        if (isChecked) {
+                            etClientCounterPrice3.enable(true)
+                            btnSubmitNegotiation.enable(false)
+                            etClientCounterPrice3.addTextChangedListener {
+                                negotiationPrice3 = it.toString().trim()
+                                btnSubmitNegotiation.apply {
+                                    enable(negotiationPrice3.isNotEmpty())
+                                    setOnClickListener {
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            val dispatchCollectionRef =
+                                                dispatchCollectionRef.document(model.dispatchId)
+
+                                            val updates = hashMapOf<String, Any>(
+                                                "statusChangeTime" to System.currentTimeMillis()
+                                                    .toString(),
+                                                "lastUpdater" to loggedUser.userId,
+                                                "negotiationRound" to resources.getString(R.string.negotiation_three),
+                                                "negotiationPrice3" to resources.getString(
+                                                    R.string.money_text,
+                                                    negotiationPrice3
+                                                ),
+                                            )
+
+                                            dispatchCollectionRef.update(updates)
+                                                .addOnSuccessListener {
+                                                    hideProgress()
+                                                    dialog.dismiss()
+                                                    requireContext().toast(resources.getString(R.string.update_success))
+                                                    getRealtimePendingDispatch(loggedUser)
+
+                                                }
+
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            btnSubmitNegotiation.apply {
+                                text = resources.getString(R.string.tv_accept_price)
+                                setOnClickListener {
+                                    CoroutineScope(Dispatchers.IO).launch {
+                                        val dispatchCollectionRef =
+                                            dispatchCollectionRef.document(model.dispatchId)
+
+                                        val updates = hashMapOf<String, Any>(
+                                            "statusChangeTime" to System.currentTimeMillis()
+                                                .toString(),
+                                            "lastUpdater" to loggedUser.userId,
+                                            "status" to STATUS_AWAITING_DRIVER,
+                                            "amount" to model.negotiationPrice2,
+                                        )
+
+                                        dispatchCollectionRef.update(updates)
+                                            .addOnSuccessListener {
+                                                hideProgress()
+                                                requireContext().toast(resources.getString(R.string.update_success))
+                                                dialog.dismiss()
+
+                                            }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            n3 -> {
+                //last updater is client
+                //driver either accept of cancels
+                etClientCounterPrice1.visible(false)
+                negotiation1Price.visible(true)
+                negotiation1Price.text = model.negotiationPrice1
+                etClientCounterPrice2.visible(false)
+                negotiation2Price.visible(true)
+                negotiation2Price.text = model.negotiationPrice2
+                etClientCounterPrice3.visible(false)
+                negotiation3Price.visible(true)
+                negotiation3Price.text = model.negotiationPrice3
+                if (loggedUser.role == resources.getString(R.string.driver)) {
+                    tvNegotiationInfo.apply {
+                        setTextColor(resources.getColor(R.color.reject))
+                        text = resources.getString(R.string.negotiation_last_round_warning)
+                        typeface.isBold
+                    }
+                    cbClientNegotiate.enable(false)
+                    btnSubmitNegotiation.apply {
+                        text = resources.getString(R.string.tv_accept_price)
+                        setOnClickListener {
+                            //
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val dispatchCollectionRef =
+                                    dispatchCollectionRef.document(model.dispatchId)
+
+                                val updates = hashMapOf<String, Any>(
+                                    "statusChangeTime" to System.currentTimeMillis()
+                                        .toString(),
+                                    "lastUpdater" to loggedUser.userId,
+                                    "status" to STATUS_AWAITING_DRIVER,
+                                    "amount" to model.negotiationPrice3,
+                                )
+
+                                dispatchCollectionRef.update(updates)
+                                    .addOnSuccessListener {
+                                        hideProgress()
+                                        requireContext().toast(resources.getString(R.string.update_success))
+                                        dialog.dismiss()
+                                    }
+                            }
+                            dialog.dismiss()
+                        }
+                    }
+                    btnCancelNegotiation.apply {
+                        text = resources.getString(R.string.cancel_negotiation)
+                        setOnClickListener {
+                            val emptyList = listOf<String>()
+                            //remove driver from dispatch
+                            //change dispatch status to pending driver
+                            //remove all negotiation prices and rounds
+                            //remove dispatch from driver list
+                            val cancelledDispatch = Dispatch(
+                                status = STATUS_PENDING_DRIVER,
+                                packageType = model.packageType,
+                                weight = model.weight,
+                                amount = "",
+                                client = model.client,
+                                driver = "",
+                                weigher = model.weigher,
+                                statusChangeTime = System.currentTimeMillis().toString(),
+                                weighingDate = model.weighingDate,
+                                lastUpdater = model.client,
+                                pickupAddress = model.pickupAddress,
+                                pickupProvince = model.pickupProvince,
+                                pickupCountry = model.pickupCountry,
+                                pickupCountryCode = model.pickupCountryCode,
+                                pickupDate = model.pickupDate,
+                                dropOffAddress = model.dropOffAddress,
+                                dropOffProvince = model.dropOffProvince,
+                                dropOffCountry = model.dropOffCountry,
+                                dropOffCountryCode = model.dropOffCountryCode,
+                                transitLocation = model.transitLocation,
+                                pickerName = model.pickerName,
+                                pickerNumber = model.pickerNumber,
+                                interestedDrivers = mapOf(),
+                                negotiationRound = "",
+                                negotiationPrice0 = "",
+                                negotiationPrice1 = "",
+                                negotiationPrice2 = "",
+                                negotiationPrice3 = "",
+                                dateCreated = model.dateCreated,
+                                dateWeighed = model.dateWeighed,
+                                datePickedUp = model.datePickedUp,
+                                dateDelivered = model.dateDelivered,
+                                dispatchId = model.dispatchId,
+                            )
+                            CoroutineScope(Dispatchers.IO).launch {
+                                try {
+                                    dispatchCollectionRef.document(model.dispatchId).set(cancelledDispatch)
+                                        .await()
+                                    hideProgress()
+                                    dialog.dismiss()
+                                    getRealtimePendingDispatch(loggedUser)
+
+
+                                } catch (e: Exception) {
+                                    withContext(Dispatchers.Main) {
+                                        activity?.toast(e.message.toString())
+                                        Log.d(TAG, "createNewDispatch: ${e.message.toString()}")
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                } else {
+                    tvNegotiationInfo.apply {
+                        setTextColor(resources.getColor(R.color.primary))
+                        text = resources.getString(R.string.negotiation_last_round_client_warning)
+                        typeface.isBold
+                    }
+                    cbClientNegotiate.enable(false)
+                    btnCancelNegotiation.visible(false)
+                    btnSubmitNegotiation.apply {
+                        text = resources.getString(R.string.okay)
+                        setOnClickListener {
+                            dialog.dismiss()
+                        }
+                    }
+                }
+            }
+        }
+
+        dialog.show()
+
+    }
+
+    private fun makeCall(number: String) {
+        val dialIntent = Intent(Intent.ACTION_DIAL)
+        //dialIntent.data = Uri.fromParts("tel",phoneNumber,null)
+        dialIntent.data = Uri.fromParts("tel", number, null)
+        startActivity(dialIntent)
 
     }
 
@@ -627,7 +997,7 @@ class PendingDispatch : Fragment() {
                         dispatchCollectionRef.update(updates).addOnSuccessListener {
                             hideProgress()
                             dialog.dismiss()
-                            launchFirstNegotiationDialog(dispatch, driver.driverCharge, loggedUser)
+                            launchFirstNegotiationDialog(dispatch, driver, loggedUser)
 
                         }
 
@@ -657,7 +1027,7 @@ class PendingDispatch : Fragment() {
 
     private fun launchFirstNegotiationDialog(
         dispatch: Dispatch,
-        driverCharge: String,
+        driver: InterestedDriverDetail,
         loggedUser: UserData
     ) {
 
@@ -683,7 +1053,7 @@ class PendingDispatch : Fragment() {
             builder.findViewById<TextView>(R.id.client_accept_price_dialog_submit_text)
 
         tvDispatchAcceptPriceQuestion.text =
-            resources.getString(R.string.accept_price_question, driverCharge)
+            resources.getString(R.string.accept_price_question, driver)
 
         val dialog = AlertDialog.Builder(requireContext())
             .setView(builder)
@@ -702,7 +1072,7 @@ class PendingDispatch : Fragment() {
                 etClientCounterOffer.addTextChangedListener {
                     counterCharge = it.toString().trim()
                     tvSubmitCounterOffer.apply {
-                        visible(driverCharge.isNotEmpty())
+                        visible(driver.driverCharge.isNotEmpty())
                         setOnClickListener {
                             //update the negotiation price and round and last updater
 
@@ -751,13 +1121,20 @@ class PendingDispatch : Fragment() {
                     "statusChangeTime" to System.currentTimeMillis().toString(),
                     "lastUpdater" to loggedUser.userId,
                     "status" to STATUS_AWAITING_DRIVER,
-                    "amount" to driverCharge,
+                    "amount" to driver.driverCharge,
                 )
 
                 dispatchCollectionRef.update(updates)
                     .addOnSuccessListener {
                         hideProgress()
                         //launch dialog to enter picker details
+                        val listOfDispatch = listOf(dispatch.dispatchId)
+
+                        lifecycleScope.launch {
+                            userCollectionRef.document(driver.driverId)
+                                .update("dispatch", listOfDispatch).await()
+                        }
+
                         dialog.dismiss()
                         launchAddPickerDetailsDialog(dispatch, loggedUser)
 

@@ -92,14 +92,14 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="4"
             android:text="@string/negotiation_one" />
 
         <TextView
             android:id="@+id/negotiation_one_price"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="9"
+            android:layout_weight="6"
             tools:text="$180"
             tools:visibility="gone" />
 
@@ -107,7 +107,7 @@
             android:id="@+id/et_counter_price_one"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="9"
+            android:layout_weight="6"
             android:hint="@string/enter_counter_price" />
 
 
@@ -124,14 +124,14 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="4"
             android:text="@string/negotiation_two" />
 
         <TextView
             android:id="@+id/negotiation_two_price"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="9"
+            android:layout_weight="6"
             tools:text="$180"
             tools:visibility="gone" />
 
@@ -139,7 +139,7 @@
             android:id="@+id/et_counter_price_two"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="9"
+            android:layout_weight="6"
             android:hint="@string/enter_counter_price" />
 
 
@@ -156,14 +156,14 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="4"
             android:text="@string/negotiation_three" />
 
         <TextView
             android:id="@+id/negotiation_three_price"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="9"
+            android:layout_weight="6"
             tools:text="$180"
             tools:visibility="gone" />
 
@@ -171,7 +171,7 @@
             android:id="@+id/et_counter_price_three"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="9"
+            android:layout_weight="6"
             android:hint="@string/enter_counter_price" />
 
 

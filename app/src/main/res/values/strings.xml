@@ -55,10 +55,10 @@
     <string name="tv_dispatch_details_title">Dispatch Details</string>
     <string name="call_dispatch_driver">Call</string>
     <string name="negotiate_text">Negotiate</string>
-    <string name="negotiation_one">N1 (Your Bargain)</string>
+    <string name="negotiation_one">N1 (Client Bargain)</string>
     <string name="enter_counter_price">Enter counter price (€)</string>
     <string name="negotiation_two">N2 (Driver Bargain)</string>
-    <string name="negotiation_three">N3 (Your Bargain)</string>
+    <string name="negotiation_three">N3 (Client Bargain)</string>
     <string name="negotiation_info">The deal automatically cancels after 3 negotiations</string>
     <string name="tv_dispatch_negotiation_title">Dispatch Negotiation</string>
     <string name="confirm_service_creation_title">Confirm Dispatch Request</string>
@@ -135,6 +135,12 @@
     <string name="tv_enter_picker_details">Add Picker Details</string>
     <string name="enter_picker_name">Enter picker name</string>
     <string name="enter_picker_phone_number">EntEnter picker phone number</string>
+    <string name="wait_for_response">Wait for other party to respond</string>
+    <string name="update_success">Update successful</string>
+    <string name="okay">Okay</string>
+    <string name="cancel_negotiation">Cancel Negotiation</string>
+    <string name="negotiation_last_round_warning">This is the last negotiation round. Accept or Opt Out</string>
+    <string name="negotiation_last_round_client_warning">Last negotiation round. Awaiting driver decision</string>
 
     <string-array name="dispatch_tab_titles">
         <item>Pending</item>
