@@ -12,6 +12,7 @@
         android:textAlignment="center"
         android:text="@string/tv_dispatch_details_title"
         android:textStyle="bold"
+        android:textColor="@color/primary"
         android:textSize="@dimen/text_xl"
         android:layout_margin="@dimen/padding_mini"/>
 
@@ -72,7 +73,7 @@
         android:text="@string/driver_interested_text"
         android:padding="@dimen/padding_mini"
         android:layout_margin="@dimen/padding_mini"
-        android:textColor="#29B6F6"
+        android:textColor="@color/primary"
         android:textStyle="bold"
         android:id="@+id/driver_interest_dialog_interested_checkbox"/>
 

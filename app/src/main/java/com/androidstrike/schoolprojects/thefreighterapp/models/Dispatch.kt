@@ -8,7 +8,7 @@ data class Dispatch(
     val client: String = "",
     val driver: String = "",
     var weigher: String = "",
-    var statusChangeTime: String = "",
+    val statusChangeTime: String = "",
     var weighingDate: String = "",
     val lastUpdater: String = "",
     val pickupAddress: String = "",

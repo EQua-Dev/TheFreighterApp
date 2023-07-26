@@ -40,13 +40,16 @@
             android:layout_margin="@dimen/padding_mini"/>
 
         <TextView
+            android:id="@+id/tv_dispatch_driver_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/tv_dispatch_driver_name"
             android:layout_below="@id/tv_dispatch_destination"
-            tools:text="@string/no_driver"
+            android:layout_marginStart="@dimen/padding_mini"
+            android:layout_marginTop="@dimen/padding_mini"
+            android:layout_marginEnd="@dimen/padding_mini"
+            android:layout_marginBottom="@dimen/padding_mini"
             android:padding="@dimen/padding_mini"
-            android:layout_margin="@dimen/padding_mini"/>
+            tools:text="@string/no_driver" />
 
     </RelativeLayout>
 

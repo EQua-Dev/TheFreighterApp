@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="@dimen/padding_mini">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding_mini"
+        android:text="@string/tv_accept_price"
+        android:textAlignment="center"
+        android:textColor="@color/primary"
+        android:textSize="@dimen/text_xl"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/client_accept_price_dialog_question"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding_mini"
+        android:padding="@dimen/padding_mini"
+        tools:text="@string/accept_price_question" />
+
+    <CheckBox
+        android:id="@+id/client_accept_price_dialog_negotiate_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding_mini"
+        android:padding="@dimen/padding_mini"
+        android:text="@string/client_negotiate_text"
+        android:textColor="@color/primary"
+        android:textStyle="bold" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_layout_client_counter_offer"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding_mini"
+        android:enabled="false"
+        android:hint="@string/set_counter_charge">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/et_set_counter_offer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/set_counter_charge"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:labelFor="@id/et_set_counter_offer"
+            android:maxLength="6" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_margin="@dimen/padding_mini"
+        android:orientation="vertical"
+        android:padding="@dimen/margin_mini">
+
+
+        <TextView
+            android:id="@+id/client_accept_price_dialog_accept_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:padding="@dimen/padding_mini"
+            android:text="@string/tv_accept_price" />
+
+        <TextView
+            android:id="@+id/client_accept_price_dialog_submit_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_margin="@dimen/margin_mini"
+            android:padding="@dimen/padding_mini"
+            android:text="@string/new_dispatch_submit_btn"
+            android:textColor="@color/primary"
+            android:textStyle="bold"
+            tools:visibility="visible" />
+
+
+    </LinearLayout>
+
+</LinearLayout>

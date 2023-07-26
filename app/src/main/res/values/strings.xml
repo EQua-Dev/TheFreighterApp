@@ -55,10 +55,10 @@
     <string name="tv_dispatch_details_title">Dispatch Details</string>
     <string name="call_dispatch_driver">Call</string>
     <string name="negotiate_text">Negotiate</string>
-    <string name="negotiation_one">N1</string>
+    <string name="negotiation_one">N1 (Your Bargain)</string>
     <string name="enter_counter_price">Enter counter price (€)</string>
-    <string name="negotiation_two">N2</string>
-    <string name="negotiation_three">N3</string>
+    <string name="negotiation_two">N2 (Driver Bargain)</string>
+    <string name="negotiation_three">N3 (Your Bargain)</string>
     <string name="negotiation_info">The deal automatically cancels after 3 negotiations</string>
     <string name="tv_dispatch_negotiation_title">Dispatch Negotiation</string>
     <string name="confirm_service_creation_title">Confirm Dispatch Request</string>
@@ -98,6 +98,7 @@
     <string name="phone_verification_title">2 FA</string>
     <string name="weigher_set_price_subtitle">Set your charge (per pound)</string>
     <string name="set_weigher_charge">Enter charge (€)</string>
+    <string name="set_counter_charge">Enter counter offer (€)</string>
     <string name="invalid_date">Pickup date required</string>
     <string name="invalid_province">Pickup province required</string>
     <string name="tv_dispatch_destination">To: %s, %s</string>
@@ -122,6 +123,18 @@
     <string name="driver_not_interested_text">Not Interested</string>
     <string name="dispatch_detail_address">%s, %s, %s</string>
     <string name="already_interested">Already indicated interest</string>
+    <string name="add_driver_search_time">Pending driver time elapsed. Add time?</string>
+    <string name="time_added">Time added</string>
+    <string name="still_pending_drivers">Pending drivers</string>
+    <string name="no_driver_add_time">Mo driver, add pending time</string>
+    <string name="interested_drivers_title">Interested Drivers</string>
+    <string name="money_text">€%s</string>
+    <string name="tv_accept_price">Accept Price</string>
+    <string name="accept_price_question">Do you accept the driver stated price (%s)?</string>
+    <string name="client_negotiate_text">Negotiate</string>
+    <string name="tv_enter_picker_details">Add Picker Details</string>
+    <string name="enter_picker_name">Enter picker name</string>
+    <string name="enter_picker_phone_number">EntEnter picker phone number</string>
 
     <string-array name="dispatch_tab_titles">
         <item>Pending</item>

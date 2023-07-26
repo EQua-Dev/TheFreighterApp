@@ -141,22 +141,6 @@ class CreateNewDispatch : Fragment() {
                 dispatchDropOffCountry.setDefaultCountryUsingNameCode(dispatch.dropOffCountryCode)
                 dispatchPickupDate.setText(dispatch.pickupDate)
 
-//                if (dispatch.pickupCountryCode.isNotEmpty()){
-//                    pickupCountryCode = dispatch.pickupCountryCode
-//                }
-//                else{
-//                    pickupCountryCode = dispatchPickupCountry.defaultCountryNameCode
-//                    pickupCountry = dispatchPickupCountry.defaultCountryName
-//                }
-//                if (dispatch.dropickupCountryCode.isNotEmpty()){
-//                    pickupCountryCode = dispatch.pickupCountryCode
-//                }
-//                else{
-//                    pickupCountryCode = dispatchPickupCountry.defaultCountryNameCode
-//                    pickupCountry = dispatchPickupCountry.defaultCountryName
-//                }
-//                dropOffCountry = dispatchDropOffCountry.defaultCountryName
-//                dropOffCountry = dispatchDropOffCountry.defaultCountryName
             }
 
 
