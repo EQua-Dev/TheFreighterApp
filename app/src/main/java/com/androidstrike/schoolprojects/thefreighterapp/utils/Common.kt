@@ -12,6 +12,8 @@ object Common {
 
 
     const val DATE_FORMAT = "EEEE, dd MMM, yyyy"
+    const val DATE_FORMAT_SHORT = "EEE, dd MMM, yyyy"
+    const val NOT_AVAILABLE = "N/A"
     const val MIN_PASSWORD = 8
 
     const val STATUS_DRAFT = "draft" //the client has not completed the dispatch request

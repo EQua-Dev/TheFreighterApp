@@ -53,7 +53,7 @@
     <string name="pick_up_date">Date: %s</string>
     <string name="tv_choose_dispatch_driver_confirm_btn">Confirm</string>
     <string name="tv_dispatch_details_title">Dispatch Details</string>
-    <string name="call_dispatch_driver">Call</string>
+    <string name="call_dispatch_driver">call</string>
     <string name="negotiate_text">Negotiate</string>
     <string name="negotiation_one">N1 (Client Bargain)</string>
     <string name="enter_counter_price">Enter counter price (€)</string>
@@ -62,8 +62,10 @@
     <string name="negotiation_info">The deal automatically cancels after 3 negotiations</string>
     <string name="tv_dispatch_negotiation_title">Dispatch Negotiation</string>
     <string name="confirm_service_creation_title">Confirm Dispatch Request</string>
-    <string name="confirm_service_creation_text">A total fee of %s will be deducted from your wallet balance
-40% to driver before delivery 60% to driver after delivery</string>
+    <string name="confirm_service_creation_text">A total fee of \u20AC%s will be deducted from your wallet balance\n\n
+40% to driver before delivery \n\n60% to driver after delivery</string>
+    <string name="confirm_service_delivery_title">Confirm Dispatch Delivery</string>
+    <string name="confirm_service_delivery_text">The remaining 60% of the amount will be released to the driver.\n\nThis cannot be reversed</string>
     <string name="driver">Driver</string>
     <string name="client">Client</string>
     <string name="weigher">Weigher</string>
@@ -105,6 +107,7 @@
     <string name="no_driver">No Driver Yet</string>
     <string name="no_destination">No Destination Yet</string>
     <string name="dispatch_driver">Driver: %s</string>
+    <string name="dispatch_client">Client: %s</string>
     <string name="dispatch_weighing_date">Enter Weighing Date</string>
     <string name="weighing_cost">€ %s</string>
     <string name="invalid_weighing_date">Weighing Date Schedule Required</string>
@@ -129,6 +132,7 @@
     <string name="no_driver_add_time">Mo driver, add pending time</string>
     <string name="interested_drivers_title">Interested Drivers</string>
     <string name="money_text">€%s</string>
+    <string name="dispatch_detail_money_text">%s (%s)</string>
     <string name="tv_accept_price">Accept Price</string>
     <string name="accept_price_question">Do you accept the driver stated price (%s)?</string>
     <string name="client_negotiate_text">Negotiate</string>
@@ -141,6 +145,16 @@
     <string name="cancel_negotiation">Cancel Negotiation</string>
     <string name="negotiation_last_round_warning">This is the last negotiation round. Accept or Opt Out</string>
     <string name="negotiation_last_round_client_warning">Last negotiation round. Awaiting driver decision</string>
+    <string name="dispatch_detail_date_created">Date created: %s</string>
+    <string name="dispatch_date_picked_up">Date Picked Up: %s</string>
+    <string name="dispatch_date_delivered">Date Delivered: %s</string>
+    <string name="dispatch_pickup_address_text">Pickup Address</string>
+    <string name="dispatch_drop_off_address_text">Drop-off Address</string>
+    <string name="dispatch_detail_confirm_pickup">confirm pickup</string>
+    <string name="dispatch_detail_confirm_delivery">confirm delivery</string>
+    <string name="dispatch_navigate_pickup_address">navigate to pickup address</string>
+    <string name="dispatch_navigate_drop_off_address">navigate to drop off address</string>
+    <string name="dispatch_detail_picker_name">Picker: %s</string>
 
     <string-array name="dispatch_tab_titles">
         <item>Pending</item>

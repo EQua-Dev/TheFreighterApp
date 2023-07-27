@@ -1,5 +1,6 @@
 package com.androidstrike.schoolprojects.thefreighterapp.features.home.client.dispatch.pending
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.addTextChangedListener
@@ -21,13 +23,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.androidstrike.schoolprojects.thefreighterapp.R
 import com.androidstrike.schoolprojects.thefreighterapp.databinding.FragmentPendingDispatchBinding
-import com.androidstrike.schoolprojects.thefreighterapp.features.home.client.dispatch.CreateNewDispatchDirections
 import com.androidstrike.schoolprojects.thefreighterapp.features.home.client.dispatch.DispatchScreenLandingDirections
 import com.androidstrike.schoolprojects.thefreighterapp.models.Dispatch
 import com.androidstrike.schoolprojects.thefreighterapp.models.InterestedDriverDetail
 import com.androidstrike.schoolprojects.thefreighterapp.models.UserData
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.DATE_FORMAT
+import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.DATE_FORMAT_SHORT
+import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.NOT_AVAILABLE
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.STATUS_AWAITING_DRIVER
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.STATUS_AWAITING_WEIGHER
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.STATUS_DELIVERED
@@ -75,6 +78,10 @@ class PendingDispatch : Fragment() {
 
     private val TAG = "PendingDispatch"
 
+    private lateinit var clientRole: String
+    private lateinit var driverRole: String
+    private lateinit var weigherRole: String
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -87,6 +94,9 @@ class PendingDispatch : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        clientRole = resources.getString(R.string.client)
+        driverRole = resources.getString(R.string.driver)
+        weigherRole = resources.getString(R.string.weigher)
 
         getUser("")
 
@@ -209,6 +219,7 @@ class PendingDispatch : Fragment() {
                         if (!isUpToTenMinutes(model.statusChangeTime.toLong()) && model.interestedDrivers.isEmpty()) {
                             holder.pendingDispatchDriverName.apply {
                                 text = resources.getString(R.string.add_driver_search_time)
+                                setTextColor(resources.getColor(R.color.primary))
                                 setOnClickListener {
 
                                     CoroutineScope(Dispatchers.IO).launch {
@@ -230,8 +241,6 @@ class PendingDispatch : Fragment() {
                             }
                         }
                     }
-
-
                     holder.itemView.setOnClickListener {
                         //launch a new screen
                         if (model.status == STATUS_DRAFT) {
@@ -246,11 +255,8 @@ class PendingDispatch : Fragment() {
                                 navController.navigate(navToCreateDispatch)
                             }
                         } else {
-                            launchDispatchDetailDialog(model, loggedUser)
+                            handleDispatchesStatuses(model, loggedUser)
                         }
-
-
-                        // TODO: see details of order
                     }
                 }
             }
@@ -264,64 +270,12 @@ class PendingDispatch : Fragment() {
 
     }
 
-    private fun launchDispatchDetailDialog(model: Dispatch, loggedUser: UserData) {
+    private fun handleDispatchesStatuses(model: Dispatch, loggedUser: UserData) {
         when (model.status) {
             STATUS_AWAITING_WEIGHER -> {
                 //open dialog for weigher to input the weight
                 if (model.weigher == loggedUser.userId) {
-                    val builder =
-                        layoutInflater.inflate(R.layout.set_weigher_charge_dialog, null)
-
-                    val etPackageWeight =
-                        builder.findViewById<TextInputEditText>(R.id.set_weigher_charge)
-                    val tilPackageWeight =
-                        builder.findViewById<TextInputLayout>(R.id.text_input_layout_weigher_charge)
-                    val weigherChargeTitle =
-                        builder.findViewById<TextView>(R.id.weigher_set_price_subtitle)
-
-                    weigherChargeTitle.text = resources.getString(R.string.dispatch_package_weight)
-                    tilPackageWeight.setHint(resources.getString(R.string.package_weight))
-
-
-                    val btnContinue =
-                        builder.findViewById<Button>(R.id.set_weigher_charge_btn)
-
-                    val dialog = AlertDialog.Builder(requireContext())
-                        .setView(builder)
-                        .setCancelable(false)
-                        .create()
-
-                    btnContinue.enable(false)
-
-                    etPackageWeight.addTextChangedListener {
-                        val packageWeight = it.toString().trim()
-                        btnContinue.apply {
-                            enable(packageWeight.isNotEmpty())
-                            setOnClickListener {
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    val dispatchCollectionRef =
-                                        dispatchCollectionRef.document(model.dispatchId)
-
-                                    val updates = hashMapOf<String, Any>(
-                                        "status" to STATUS_PENDING_DRIVER,
-                                        "weight" to packageWeight,
-                                        "dateWeighed" to System.currentTimeMillis().toString(),
-                                        "statusChangeTime" to System.currentTimeMillis().toString()
-                                    )
-
-                                    dispatchCollectionRef.update(updates).addOnSuccessListener {
-                                        hideProgress()
-                                        dialog.dismiss()
-                                        getRealtimePendingDispatch(loggedUser)
-
-                                    }
-
-                                }
-                            }
-                        }
-                    }
-
-                    dialog.show()
+                    launchWeigherAddWeightDialog(loggedUser, model)
                 } else {
                     requireContext().toast(resources.getString(R.string.waiting_for_weight))
                 }
@@ -483,26 +437,28 @@ class PendingDispatch : Fragment() {
                     //should wait for the other person to say
                     requireContext().toast(resources.getString(R.string.wait_for_response))
                 } else {
-
                     launchNegotiationDialog(model, loggedUser)
-
-
-                    //tvOriginalAmount.text = model.amount
                 }
-
             }
 
             STATUS_AWAITING_DRIVER -> {
+
+                launchDispatchDetails(loggedUser, model, STATUS_AWAITING_DRIVER)
                 //if the client clicks in this status, a dialog pops up asking if the driver has arrived,
                 //if yes, it changes the status if nom it remains same
 
-                //if driver clicks in this status, they are told that the client is waiting for them and will update status when they pick dispatch
+                //if driver clicks in this status, they are told that the client is waiting for them
+                // and will update status when they pick dispatch
 
             }
 
             STATUS_IN_TRANSIT -> {
-                //if client clicks in this stage, they see the card of the dispatch detail and have the options to call or locate driver
-                //if they request location, the driver gets alert on his own card to share location, which is updated to the server and user can click it.
+                launchDispatchDetails(loggedUser, model, STATUS_IN_TRANSIT)
+
+                //if client clicks in this stage, they see the card of the dispatch detail
+                // and have the options to call or locate driver
+                //if they request location, the driver gets alert on his own card to share location,
+                // which is updated to the server and user can click it.
 
                 //there will also be a place to confirm dispatch delivery
                 //driver will first indicate and the client is prompted to confirm
@@ -517,6 +473,282 @@ class PendingDispatch : Fragment() {
 
             }
         }
+
+    }
+
+    private fun launchDispatchDetails(loggedUser: UserData, dispatch: Dispatch, status: String) {
+
+        val builder =
+            layoutInflater.inflate(R.layout.fragment_dispatch_details, null)
+
+        val dispatchDateCreated =
+            builder.findViewById<TextView>(R.id.dispatch_detail_date_created)
+        val dispatchPackageType =
+            builder.findViewById<TextView>(R.id.dispatch_detail_package_type)
+        val dispatchDriverName =
+            builder.findViewById<TextView>(R.id.dispatch_detail_driver_name)
+        val dispatchDatePickedUp =
+            builder.findViewById<TextView>(R.id.dispatch_detail_date_picked_up)
+        val dispatchDateDelivered =
+            builder.findViewById<TextView>(R.id.dispatch_detail_date_delivered)
+        val dispatchPickupAddress =
+            builder.findViewById<TextView>(R.id.dispatch_detail_pickup_address)
+        val dispatchDropOffAddress =
+            builder.findViewById<TextView>(R.id.dispatch_detail_drop_off_address)
+        val dispatchPickerName =
+            builder.findViewById<TextView>(R.id.dispatch_detail_picker_name)
+        val dispatchStatus =
+            builder.findViewById<TextView>(R.id.dispatch_detail_status)
+        val dispatchAmount =
+            builder.findViewById<TextView>(R.id.dispatch_detail_amount)
+        val dispatchCallDriver =
+            builder.findViewById<TextView>(R.id.dispatch_detail_call_driver)
+        val dispatchConfirmPickup =
+            builder.findViewById<TextView>(R.id.dispatch_detail_confirm_pickup)
+        val dispatchConfirmDelivery =
+            builder.findViewById<TextView>(R.id.dispatch_detail_confirm_delivery)
+        val dispatchPickupDirection =
+            builder.findViewById<ImageView>(R.id.dispatch_navigate_pickup_address)
+        val dispatchDropOffDirection =
+            builder.findViewById<ImageView>(R.id.dispatch_navigate_drop_off_address)
+        val dispatchCallPicker =
+            builder.findViewById<TextView>(R.id.dispatch_detail_call_picker)
+        val dispatchDetailOkayBtn =
+            builder.findViewById<TextView>(R.id.dispatch_details_okay_button)
+
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(builder)
+            .setCancelable(false)
+            .create()
+
+        dispatchDetailOkayBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+
+
+        dispatchDateCreated.text = resources.getString(
+            R.string.dispatch_detail_date_created,
+            getDate(dispatch.dateCreated.toLong(), DATE_FORMAT_SHORT)
+        )
+        dispatchPackageType.text = resources.getString(
+            R.string.driver_pickup_package_type,
+            dispatch.packageType,
+            dispatch.weight
+        )
+        dispatchDriverName.text = if (loggedUser.role == clientRole) {
+            resources.getString(
+                R.string.dispatch_driver,
+                getDispatchDriver(dispatch.driver)!!.fullName
+            )
+        } else {
+            resources.getString(
+                R.string.dispatch_client,
+                getDispatchDriver(dispatch.client)!!.fullName
+            )
+        }
+        dispatchDatePickedUp.text = if (dispatch.datePickedUp.isNotEmpty()) {
+            resources.getString(
+                R.string.dispatch_date_picked_up,
+                getDate(dispatch.datePickedUp.toLong(), DATE_FORMAT_SHORT)
+            )
+        } else {
+            resources.getString(R.string.dispatch_date_picked_up, NOT_AVAILABLE)
+        }
+        dispatchDateDelivered.text = if (dispatch.dateDelivered.isNotEmpty()) {
+            resources.getString(
+                R.string.dispatch_date_delivered,
+                getDate(dispatch.dateDelivered.toLong(), DATE_FORMAT_SHORT)
+            )
+        } else {
+            resources.getString(R.string.dispatch_date_delivered, NOT_AVAILABLE)
+        }
+        dispatchPickupAddress.text = resources.getString(
+            R.string.dispatch_detail_address,
+            dispatch.pickupAddress,
+            dispatch.pickupProvince,
+            dispatch.pickupCountry
+        )
+        dispatchDropOffAddress.text = resources.getString(
+            R.string.dispatch_detail_address,
+            dispatch.dropOffAddress,
+            dispatch.dropOffProvince,
+            dispatch.dropOffCountry
+        )
+        dispatchPickerName.text =
+            resources.getString(R.string.dispatch_detail_picker_name, dispatch.pickerName)
+        dispatchStatus.text = dispatch.status
+        dispatchAmount.text = if (status == STATUS_IN_TRANSIT) {
+            resources.getString(R.string.dispatch_detail_money_text, dispatch.amount, "40%")
+        } else if (status == STATUS_DELIVERED){
+            resources.getString(R.string.dispatch_detail_money_text, dispatch.amount, "100%")
+        } else{
+            resources.getString(R.string.dispatch_detail_money_text, dispatch.amount, "0%")
+
+        }
+        dispatchCallDriver.setOnClickListener {
+            if (loggedUser.role == clientRole) {
+                makeCall(getDispatchDriver(dispatch.driver)!!.phoneNumber)
+            } else {
+                makeCall(getDispatchDriver(dispatch.client)!!.phoneNumber)
+            }
+        }
+        dispatchConfirmPickup.apply {
+            enable(status != STATUS_IN_TRANSIT && loggedUser.role == clientRole)
+            setOnClickListener {
+                val alertDialogBuilder = AlertDialog.Builder(context)
+                alertDialogBuilder.setTitle(resources.getString(R.string.confirm_service_creation_title))
+                alertDialogBuilder.setMessage(
+                    resources.getString(R.string.confirm_service_creation_text))//, dispatch.amount))
+                alertDialogBuilder.setPositiveButton("OK") { confirmDialog, _ ->
+                    // Code to execute when the OK button is clicked
+                    //change the status to in transit
+                    //set pick up date
+                    //update dispatch
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val dispatchCollectionRef =
+                            dispatchCollectionRef.document(dispatch.dispatchId)
+
+                        val updates = hashMapOf<String, Any>(
+                            "statusChangeTime" to System.currentTimeMillis()
+                                .toString(),
+                            "status" to STATUS_IN_TRANSIT,
+                            "datePickedUp" to System.currentTimeMillis().toString(),
+                        )
+
+                        dispatchCollectionRef.update(updates)
+                            .addOnSuccessListener {
+                                hideProgress()
+                                confirmDialog.dismiss()
+                                requireContext().toast(resources.getString(R.string.update_success))
+                                dialog.dismiss()
+                                getRealtimePendingDispatch(loggedUser)
+
+                            }
+
+                    }
+                    confirmDialog.dismiss()
+                }
+                alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+                    // Code to execute when the Cancel button is clicked
+                    dialog.dismiss()
+                }
+
+                val alertDialog: AlertDialog = alertDialogBuilder.create()
+                alertDialog.show()
+            }
+        }
+        dispatchConfirmDelivery.apply {
+            enable(status == STATUS_IN_TRANSIT || loggedUser.role == clientRole)
+            setOnClickListener {
+                val alertDialogBuilder = AlertDialog.Builder(context)
+                alertDialogBuilder.setTitle(resources.getString(R.string.confirm_service_delivery_title))
+                alertDialogBuilder.setMessage(resources.getString(R.string.confirm_service_delivery_text))
+                alertDialogBuilder.setPositiveButton("OK") { confirmDialog, _ ->
+                    // Code to execute when the OK button is clicked
+                    //change the status to in transit
+                    //set pick up date
+                    //update dispatch
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val dispatchCollectionRef =
+                            dispatchCollectionRef.document(dispatch.dispatchId)
+
+                        val updates = hashMapOf<String, Any>(
+                            "statusChangeTime" to System.currentTimeMillis()
+                                .toString(),
+                            "status" to STATUS_DELIVERED,
+                            "dateDelivered" to System.currentTimeMillis().toString(),
+                        )
+
+                        dispatchCollectionRef.update(updates)
+                            .addOnSuccessListener {
+                                hideProgress()
+                                confirmDialog.dismiss()
+                                requireContext().toast(resources.getString(R.string.update_success))
+                                dialog.dismiss()
+                                getRealtimePendingDispatch(loggedUser)
+
+                            }
+
+                    }
+                    confirmDialog.dismiss()
+                }
+                alertDialogBuilder.setNegativeButton("Cancel") { dialog, _ ->
+                    // Code to execute when the Cancel button is clicked
+                    dialog.dismiss()
+                }
+
+                val alertDialog: AlertDialog = alertDialogBuilder.create()
+                alertDialog.show()
+            }
+        }
+        dispatchPickupDirection.setOnClickListener {
+            locateCustomer(dispatchPickupAddress.text.toString())
+        }
+        dispatchDropOffDirection.setOnClickListener {
+            locateCustomer(dispatchPickupAddress.text.toString())
+        }
+        dispatchCallPicker.setOnClickListener {
+            makeCall(dispatch.pickerNumber)
+        }
+
+        dialog.show()
+    }
+
+    private fun launchWeigherAddWeightDialog(loggedUser: UserData, model: Dispatch) {
+        val builder =
+            layoutInflater.inflate(R.layout.set_weigher_charge_dialog, null)
+
+        val etPackageWeight =
+            builder.findViewById<TextInputEditText>(R.id.set_weigher_charge)
+        val tilPackageWeight =
+            builder.findViewById<TextInputLayout>(R.id.text_input_layout_weigher_charge)
+        val weigherChargeTitle =
+            builder.findViewById<TextView>(R.id.weigher_set_price_subtitle)
+
+        weigherChargeTitle.text = resources.getString(R.string.dispatch_package_weight)
+        tilPackageWeight.setHint(resources.getString(R.string.package_weight))
+
+
+        val btnContinue =
+            builder.findViewById<Button>(R.id.set_weigher_charge_btn)
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(builder)
+            .setCancelable(false)
+            .create()
+
+        btnContinue.enable(false)
+
+        etPackageWeight.addTextChangedListener {
+            val packageWeight = it.toString().trim()
+            btnContinue.apply {
+                enable(packageWeight.isNotEmpty())
+                setOnClickListener {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val dispatchCollectionRef =
+                            dispatchCollectionRef.document(model.dispatchId)
+
+                        val updates = hashMapOf<String, Any>(
+                            "status" to STATUS_PENDING_DRIVER,
+                            "weight" to packageWeight,
+                            "dateWeighed" to System.currentTimeMillis().toString(),
+                            "statusChangeTime" to System.currentTimeMillis().toString()
+                        )
+
+                        dispatchCollectionRef.update(updates).addOnSuccessListener {
+                            hideProgress()
+                            dialog.dismiss()
+                            getRealtimePendingDispatch(loggedUser)
+
+                        }
+
+                    }
+                }
+            }
+        }
+
+        dialog.show()
 
     }
 
@@ -738,7 +970,7 @@ class PendingDispatch : Fragment() {
                                                     hideProgress()
                                                     dialog.dismiss()
                                                     requireContext().toast(resources.getString(R.string.update_success))
-                                                    getRealtimePendingDispatch(loggedUser)
+                                                    launchAddPickerDetailsDialog(model, loggedUser)
 
                                                 }
 
@@ -867,7 +1099,8 @@ class PendingDispatch : Fragment() {
                             )
                             CoroutineScope(Dispatchers.IO).launch {
                                 try {
-                                    dispatchCollectionRef.document(model.dispatchId).set(cancelledDispatch)
+                                    dispatchCollectionRef.document(model.dispatchId)
+                                        .set(cancelledDispatch)
                                         .await()
                                     hideProgress()
                                     dialog.dismiss()
@@ -912,6 +1145,24 @@ class PendingDispatch : Fragment() {
         dialIntent.data = Uri.fromParts("tel", number, null)
         startActivity(dialIntent)
 
+    }
+
+    @SuppressLint("QueryPermissionsNeeded")
+    private fun locateCustomer(location: String) {
+        // Encode the address for the URI
+        val encodedAddress = Uri.encode(location)
+        // Create a URI with the address query
+        val uri = Uri.parse("geo:0,0?q=$encodedAddress")
+        // Create an intent with the ACTION_VIEW action and the URI
+        val mapIntent = Intent(Intent.ACTION_VIEW, uri)
+        // Set the package name to ensure the intent opens in Google Maps app
+        mapIntent.setPackage("com.google.android.apps.maps")
+        // Check if there's a compatible activity to handle the intent
+        if (mapIntent.resolveActivity(requireContext().packageManager) != null) {
+            // Start the intent
+            startActivity(mapIntent)
+
+        }
     }
 
     private fun launchAssignDriverDialog(dispatch: Dispatch, loggedUser: UserData) {

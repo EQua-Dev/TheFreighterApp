@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/padding_mini"
+    tools:context=".features.home.client.dispatch.DispatchDetails">
+
+    <TextView
+        android:id="@+id/tv_dispatch_details_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_mini"
+        android:padding="@dimen/padding_mini"
+        android:text="@string/tv_dispatch_details_title"
+        android:textAlignment="center"
+        android:textColor="@color/primary"
+        android:textSize="@dimen/text_xl"
+        android:textStyle="bold" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_dispatch_details_title"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_mini"
+        android:id="@+id/layout_dispatch_details"
+        android:textSize="@dimen/text_xxs"
+        android:weightSum="10"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/dispatch_detail_date_created"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_xxs"
+                android:padding="@dimen/padding_mini"
+                tools:text="@string/dispatch_detail_date_created" />
+
+            <TextView
+                android:id="@+id/dispatch_detail_package_type"
+                android:layout_width="wrap_content"
+                android:textSize="@dimen/text_xxs"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding_mini"
+                tools:text="@string/driver_pickup_package_type" />
+
+            <TextView
+                android:id="@+id/dispatch_detail_driver_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_xxs"
+                android:padding="@dimen/padding_mini"
+                tools:text="@string/dispatch_driver" />
+
+
+            <TextView
+                android:id="@+id/dispatch_detail_date_picked_up"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_xxs"
+                android:padding="@dimen/padding_mini"
+                tools:text="@string/dispatch_date_picked_up" />
+
+            <TextView
+                android:id="@+id/dispatch_detail_date_delivered"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding_mini"
+                android:textSize="@dimen/text_xxs"
+                tools:text="@string/dispatch_date_delivered" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding_mini"
+                android:textSize="@dimen/text_xxs"
+                android:text="@string/dispatch_pickup_address_text" />
+
+
+            <TextView
+                android:id="@+id/dispatch_detail_pickup_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding_mini"
+                android:textSize="@dimen/text_xxs"
+                tools:text="@tools:sample/cities" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_xxs"
+                android:padding="@dimen/padding_mini"
+                android:text="@string/dispatch_drop_off_address_text" />
+
+            <TextView
+                android:id="@+id/dispatch_detail_drop_off_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding_mini"
+                android:textSize="@dimen/text_xxs"
+                tools:text="@tools:sample/cities" />
+
+            <TextView
+                android:id="@+id/dispatch_detail_picker_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding_mini"
+                android:textSize="@dimen/text_xxs"
+                tools:text="@string/dispatch_detail_picker_name" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/dispatch_detail_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_xxs"
+                android:layout_gravity="center"
+                android:padding="@dimen/padding_mini"
+                android:textStyle="italic"
+                tools:text="awaiting driver" />
+
+
+            <TextView
+                android:id="@+id/dispatch_detail_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_xxs"
+                android:layout_gravity="center"
+                android:padding="@dimen/padding_mini"
+                tools:text="@string/dispatch_detail_money_text" />
+
+            <TextView
+                android:id="@+id/dispatch_detail_call_driver"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="@dimen/padding_mini"
+                android:textSize="@dimen/text_xxs"
+                android:textColor="@color/primary"
+                android:textStyle="bold"
+                tools:text="@string/call_dispatch_driver" />
+
+            <TextView
+                android:id="@+id/dispatch_detail_confirm_pickup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="@dimen/padding_mini"
+                android:textSize="@dimen/text_xxs"
+                android:textAlignment="center"
+                android:text="@string/dispatch_detail_confirm_pickup"
+                android:textColor="@color/primary"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/dispatch_detail_confirm_delivery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="@dimen/padding_mini"
+                android:textSize="@dimen/text_xxs"
+                android:textColor="@color/primary"
+                android:textStyle="bold"
+                tools:text="@string/dispatch_detail_confirm_delivery" />
+
+            <ImageView
+                android:id="@+id/dispatch_navigate_pickup_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/dispatch_navigate_pickup_address"
+                android:padding="@dimen/padding_midi"
+                app:srcCompat="@drawable/ic_navigation" />
+
+            <ImageView
+                android:id="@+id/dispatch_navigate_drop_off_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/dispatch_navigate_drop_off_address"
+                android:padding="@dimen/padding_midi"
+                app:srcCompat="@drawable/ic_navigation" />
+
+            <TextView
+                android:id="@+id/dispatch_detail_call_picker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="@dimen/padding_mini"
+                android:textColor="@color/primary"
+                android:textSize="@dimen/text_xxs"
+                android:textStyle="bold"
+                tools:text="@string/call_dispatch_driver" />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="@dimen/button_width_xxl"
+        android:layout_height="wrap_content"
+        app:cornerRadius="@dimen/padding_mini"
+        android:layout_centerHorizontal="true"
+        android:backgroundTint="@color/primary"
+        android:text="@string/okay"
+        android:layout_margin="@dimen/margin_mini"
+        android:layout_below="@+id/layout_dispatch_details"
+        android:id="@+id/dispatch_details_okay_button"/>
+
+
+</RelativeLayout>
