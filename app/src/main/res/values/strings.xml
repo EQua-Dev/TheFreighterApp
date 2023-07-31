@@ -155,6 +155,12 @@
     <string name="dispatch_navigate_pickup_address">navigate to pickup address</string>
     <string name="dispatch_navigate_drop_off_address">navigate to drop off address</string>
     <string name="dispatch_detail_picker_name">Picker: %s</string>
+    <string name="dispatch_detail_request_tracking">Request location</string>
+    <string name="location_request_sent">Location request sent</string>
+    <string name="update_location">Update Location</string>
+    <string name="show_in_map">show in map</string>
+    <string name="not_available">N/A</string>
+    <string name="location_updated">Location updated</string>
 
     <string-array name="dispatch_tab_titles">
         <item>Pending</item>

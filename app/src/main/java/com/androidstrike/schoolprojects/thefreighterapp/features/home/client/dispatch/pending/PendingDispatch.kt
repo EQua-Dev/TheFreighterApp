@@ -1,7 +1,10 @@
 package com.androidstrike.schoolprojects.thefreighterapp.features.home.client.dispatch.pending
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -14,6 +17,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -50,6 +54,7 @@ import com.androidstrike.schoolprojects.thefreighterapp.utils.toast
 import com.androidstrike.schoolprojects.thefreighterapp.utils.visible
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.firestore.Query
@@ -81,6 +86,14 @@ class PendingDispatch : Fragment() {
     private lateinit var clientRole: String
     private lateinit var driverRole: String
     private lateinit var weigherRole: String
+
+    private lateinit var driverLocation: String
+
+    private var dispatchForLocation = Dispatch()
+    //private lateinit var driverLatitude: String
+
+    private val locationPermissionCode = 101
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -241,6 +254,9 @@ class PendingDispatch : Fragment() {
                             }
                         }
                     }
+
+                    holder.pendingDispatchBadge.visible(model.driver == loggedUser.userId && model.userLocationRequest)
+
                     holder.itemView.setOnClickListener {
                         //launch a new screen
                         if (model.status == STATUS_DRAFT) {
@@ -514,7 +530,11 @@ class PendingDispatch : Fragment() {
         val dispatchCallPicker =
             builder.findViewById<TextView>(R.id.dispatch_detail_call_picker)
         val dispatchDetailOkayBtn =
-            builder.findViewById<TextView>(R.id.dispatch_details_okay_button)
+            builder.findViewById<Button>(R.id.dispatch_details_okay_button)
+        val dispatchDetailRequestTracking =
+            builder.findViewById<TextView>(R.id.dispatch_detail_request_tracking)
+        val dispatchDetailDriverLocation =
+            builder.findViewById<TextView>(R.id.dispatch_detail_driver_location)
 
 
         val dialog = AlertDialog.Builder(requireContext())
@@ -580,9 +600,9 @@ class PendingDispatch : Fragment() {
         dispatchStatus.text = dispatch.status
         dispatchAmount.text = if (status == STATUS_IN_TRANSIT) {
             resources.getString(R.string.dispatch_detail_money_text, dispatch.amount, "40%")
-        } else if (status == STATUS_DELIVERED){
+        } else if (status == STATUS_DELIVERED) {
             resources.getString(R.string.dispatch_detail_money_text, dispatch.amount, "100%")
-        } else{
+        } else {
             resources.getString(R.string.dispatch_detail_money_text, dispatch.amount, "0%")
 
         }
@@ -599,7 +619,8 @@ class PendingDispatch : Fragment() {
                 val alertDialogBuilder = AlertDialog.Builder(context)
                 alertDialogBuilder.setTitle(resources.getString(R.string.confirm_service_creation_title))
                 alertDialogBuilder.setMessage(
-                    resources.getString(R.string.confirm_service_creation_text))//, dispatch.amount))
+                    resources.getString(R.string.confirm_service_creation_text)
+                )//, dispatch.amount))
                 alertDialogBuilder.setPositiveButton("OK") { confirmDialog, _ ->
                     // Code to execute when the OK button is clicked
                     //change the status to in transit
@@ -690,6 +711,56 @@ class PendingDispatch : Fragment() {
         }
         dispatchCallPicker.setOnClickListener {
             makeCall(dispatch.pickerNumber)
+        }
+        dispatchDetailRequestTracking.apply {
+            visible(loggedUser.role == clientRole && dispatch.status == STATUS_IN_TRANSIT)
+            enable(!dispatch.userLocationRequest)
+            setOnClickListener {
+                //update the dispatch userRequestLocation to true, when the driver updates, it changes back to false
+                CoroutineScope(Dispatchers.IO).launch {
+                    val dispatchCollectionRef =
+                        dispatchCollectionRef.document(dispatch.dispatchId)
+
+                    val updates = hashMapOf<String, Any>(
+                        "userLocationRequest" to true
+                    )
+
+                    dispatchCollectionRef.update(updates).addOnSuccessListener {
+                        hideProgress()
+                        requireContext().toast(resources.getString(R.string.location_request_sent))
+                        dialog.dismiss()
+                    }
+
+                }
+
+            }
+        }
+        dispatchDetailDriverLocation.apply {
+            //if a driver is logged in, the text is "update location"
+            if (status == STATUS_IN_TRANSIT) {
+                visible(true)
+                if (loggedUser.role == driverRole) {
+                    enable(
+                        dispatch.userLocationRequest)
+                    text = resources.getString(R.string.update_location)
+                    setOnClickListener {
+                        //get the driver's current location and populate the database
+                        //set the dispatch.userLocationRequest to false
+                        dispatchForLocation = dispatch
+                        checkLocationPermission(dispatch)
+                    }
+                } else {
+                    text = resources.getString(R.string.show_in_map)
+                        .ifEmpty { resources.getString(R.string.not_available) }
+                    enable(dispatch.transitLocation.isNotEmpty())
+                    setOnClickListener {
+                        navigateToLocation(dispatch.transitLocation)
+                        //locateCustomer(dispatch.transitLocation)
+                    }
+                }
+            } else {
+                visible(false)
+            }
         }
 
         dialog.show()
@@ -1469,11 +1540,6 @@ class PendingDispatch : Fragment() {
         dialog.show()
     }
 
-    private fun updateDriverCharge(interestedDriversMutableMap: MutableMap<String, String>) {
-
-
-    }
-
     private fun getDispatchDriver(driver: String): UserData? {
 
         requireContext().showProgress()
@@ -1496,6 +1562,106 @@ class PendingDispatch : Fragment() {
 
         return driverUser
     }
+
+    private fun checkLocationPermission(dispatch: Dispatch) {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            // Permission is granted, you can request location updates.
+            getLocation()
+        } else {
+            // Request location permission
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                locationPermissionCode
+            )
+        }
+    }
+
+    // Override onRequestPermissionsResult to handle the permission request result.
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == locationPermissionCode) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, you can request location updates.
+                getLocation()
+            } else {
+                // Permission denied, handle this case as needed.
+                // For example, show a message to the user or disable location functionality.
+                requireContext().toast("Location permission denied. Cannot fetch location")
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getLocation() {
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+
+        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+            if (location != null) {
+                // Use the location object to get latitude and longitude.
+                val latitude = location.latitude
+                val longitude = location.longitude
+
+                driverLocation = "$latitude,$longitude"
+                CoroutineScope(Dispatchers.IO).launch {
+                    val dispatchCollectionRef =
+                        dispatchCollectionRef.document(dispatchForLocation.dispatchId)
+
+                    val updates = hashMapOf<String, Any>(
+                        "userLocationRequest" to false,
+                        "transitLocation" to driverLocation
+                    )
+
+                    dispatchCollectionRef.update(updates).addOnSuccessListener {
+                        hideProgress()
+                        requireContext().toast(resources.getString(R.string.location_updated))
+                    }
+
+                }
+
+
+                //navigateToLocation(latitude, longitude)
+
+                // Now you have the current location. You can use it as needed.
+                // For example, show it on a map or send it to your server.
+            } else {
+                // Location is null, handle this case as needed.
+                // For example, show an error message or request location updates.
+            }
+        }.addOnFailureListener { exception: Exception ->
+            // Handle the failure to get the location.
+            // For example, show an error message or request location updates.
+            requireContext().toast(exception.message.toString())
+        }
+    }
+
+
+    private fun navigateToLocation(location: String) {
+        // Create a Uri with the latitude and longitude
+        val locationUri = Uri.parse("geo:$location")
+
+        // Create an Intent with the ACTION_VIEW action and the location Uri
+        val mapIntent = Intent(Intent.ACTION_VIEW, locationUri)
+
+        // Set the package to Google Maps (optional, in case multiple map apps are installed)
+        mapIntent.setPackage("com.google.android.apps.maps")
+
+        // Check if there's an app that can handle the Intent (Google Maps is installed)
+        if (mapIntent.resolveActivity(requireActivity().packageManager) != null) {
+            // Start the Google Maps activity
+            startActivity(mapIntent)
+        } else {
+            // Handle the case where Google Maps is not installed on the device
+            // For example, show an error message or use a different map provider.
+        }
+    }
+
 
     private fun updateDispatchInfo(dispatch: Dispatch) {
 

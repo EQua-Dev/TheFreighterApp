@@ -21,6 +21,7 @@ data class Dispatch(
     val dropOffCountry: String = "",
     val dropOffCountryCode: String = "",
     val transitLocation: String = "",
+    val userLocationRequest: Boolean = false,
     val pickerName: String = "",
     val pickerNumber: String = "",
     var interestedDrivers: Map<String, String> = mapOf(),

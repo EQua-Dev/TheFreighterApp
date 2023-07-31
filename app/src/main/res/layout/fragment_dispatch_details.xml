@@ -21,15 +21,15 @@
 
 
     <LinearLayout
+        android:id="@+id/layout_dispatch_details"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_dispatch_details_title"
+        android:baselineAligned="false"
         android:orientation="horizontal"
         android:padding="@dimen/padding_mini"
-        android:id="@+id/layout_dispatch_details"
         android:textSize="@dimen/text_xxs"
-        android:weightSum="10"
-        android:baselineAligned="false">
+        android:weightSum="10">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -41,24 +41,24 @@
                 android:id="@+id/dispatch_detail_date_created"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/text_xxs"
                 android:padding="@dimen/padding_mini"
+                android:textSize="@dimen/text_xxs"
                 tools:text="@string/dispatch_detail_date_created" />
 
             <TextView
                 android:id="@+id/dispatch_detail_package_type"
                 android:layout_width="wrap_content"
-                android:textSize="@dimen/text_xxs"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/padding_mini"
+                android:textSize="@dimen/text_xxs"
                 tools:text="@string/driver_pickup_package_type" />
 
             <TextView
                 android:id="@+id/dispatch_detail_driver_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/text_xxs"
                 android:padding="@dimen/padding_mini"
+                android:textSize="@dimen/text_xxs"
                 tools:text="@string/dispatch_driver" />
 
 
@@ -66,8 +66,8 @@
                 android:id="@+id/dispatch_detail_date_picked_up"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/text_xxs"
                 android:padding="@dimen/padding_mini"
+                android:textSize="@dimen/text_xxs"
                 tools:text="@string/dispatch_date_picked_up" />
 
             <TextView
@@ -83,8 +83,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/padding_mini"
-                android:textSize="@dimen/text_xxs"
-                android:text="@string/dispatch_pickup_address_text" />
+                android:text="@string/dispatch_pickup_address_text"
+                android:textSize="@dimen/text_xxs" />
 
 
             <TextView
@@ -98,9 +98,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/text_xxs"
                 android:padding="@dimen/padding_mini"
-                android:text="@string/dispatch_drop_off_address_text" />
+                android:text="@string/dispatch_drop_off_address_text"
+                android:textSize="@dimen/text_xxs" />
 
             <TextView
                 android:id="@+id/dispatch_detail_drop_off_address"
@@ -118,6 +118,16 @@
                 android:textSize="@dimen/text_xxs"
                 tools:text="@string/dispatch_detail_picker_name" />
 
+
+            <TextView
+                android:id="@+id/dispatch_detail_request_tracking"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding_mini"
+                android:textColor="@color/primary"
+                android:text="@string/dispatch_detail_request_tracking"
+                android:textSize="@dimen/text_xxs" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -130,9 +140,9 @@
                 android:id="@+id/dispatch_detail_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/text_xxs"
                 android:layout_gravity="center"
                 android:padding="@dimen/padding_mini"
+                android:textSize="@dimen/text_xxs"
                 android:textStyle="italic"
                 tools:text="awaiting driver" />
 
@@ -141,9 +151,9 @@
                 android:id="@+id/dispatch_detail_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/text_xxs"
                 android:layout_gravity="center"
                 android:padding="@dimen/padding_mini"
+                android:textSize="@dimen/text_xxs"
                 tools:text="@string/dispatch_detail_money_text" />
 
             <TextView
@@ -152,10 +162,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="@dimen/padding_mini"
-                android:textSize="@dimen/text_xxs"
+                android:text="@string/call_dispatch_driver"
                 android:textColor="@color/primary"
-                android:textStyle="bold"
-                tools:text="@string/call_dispatch_driver" />
+                android:textSize="@dimen/text_xxs"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/dispatch_detail_confirm_pickup"
@@ -163,10 +173,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="@dimen/padding_mini"
-                android:textSize="@dimen/text_xxs"
-                android:textAlignment="center"
                 android:text="@string/dispatch_detail_confirm_pickup"
+                android:textAlignment="center"
                 android:textColor="@color/primary"
+                android:textSize="@dimen/text_xxs"
                 android:textStyle="bold" />
 
             <TextView
@@ -175,8 +185,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="@dimen/padding_mini"
-                android:textSize="@dimen/text_xxs"
                 android:textColor="@color/primary"
+                android:textSize="@dimen/text_xxs"
                 android:textStyle="bold"
                 tools:text="@string/dispatch_detail_confirm_delivery" />
 
@@ -204,10 +214,21 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="@dimen/padding_mini"
+                android:text="@string/call_dispatch_driver"
                 android:textColor="@color/primary"
                 android:textSize="@dimen/text_xxs"
-                android:textStyle="bold"
-                tools:text="@string/call_dispatch_driver" />
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/dispatch_detail_driver_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="@dimen/padding_maxi"
+                tools:text="@tools:sample/cities"
+                android:textColor="@color/primary"
+                android:textSize="@dimen/text_xxs"
+                android:textStyle="bold" />
 
 
         </LinearLayout>
@@ -216,15 +237,15 @@
 
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/dispatch_details_okay_button"
         android:layout_width="@dimen/button_width_xxl"
         android:layout_height="wrap_content"
-        app:cornerRadius="@dimen/padding_mini"
+        android:layout_below="@+id/layout_dispatch_details"
         android:layout_centerHorizontal="true"
+        android:layout_margin="@dimen/margin_mini"
         android:backgroundTint="@color/primary"
         android:text="@string/okay"
-        android:layout_margin="@dimen/margin_mini"
-        android:layout_below="@+id/layout_dispatch_details"
-        android:id="@+id/dispatch_details_okay_button"/>
+        app:cornerRadius="@dimen/padding_mini" />
 
 
 </RelativeLayout>

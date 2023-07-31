@@ -3,6 +3,7 @@ package com.androidstrike.schoolprojects.thefreighterapp.features.home.client.di
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.androidstrike.schoolprojects.thefreighterapp.R
 
@@ -12,6 +13,7 @@ class PendingDispatchAdapter(itemView: View): RecyclerView.ViewHolder(itemView) 
     var pendingDispatchStatus: TextView
     var pendingDispatchDestination: TextView
     var pendingDispatchDriverName: TextView
+    var pendingDispatchBadge: CardView
 
 
 
@@ -22,7 +24,6 @@ class PendingDispatchAdapter(itemView: View): RecyclerView.ViewHolder(itemView) 
         pendingDispatchStatus = itemView.findViewById(R.id.tv_dispatch_status)
         pendingDispatchDestination = itemView.findViewById(R.id.tv_dispatch_destination)
         pendingDispatchDriverName = itemView.findViewById(R.id.tv_dispatch_driver_name)
-
-
+        pendingDispatchBadge = itemView.findViewById(R.id.cv_notification)
     }
 }

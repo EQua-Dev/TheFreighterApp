@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="@dimen/padding_mini"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -39,17 +40,34 @@
             android:padding="@dimen/padding_mini"
             android:layout_margin="@dimen/padding_mini"/>
 
-        <TextView
-            android:id="@+id/tv_dispatch_driver_name"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:weightSum="5"
+            android:orientation="horizontal"
             android:layout_below="@id/tv_dispatch_destination"
-            android:layout_marginStart="@dimen/padding_mini"
-            android:layout_marginTop="@dimen/padding_mini"
-            android:layout_marginEnd="@dimen/padding_mini"
-            android:layout_marginBottom="@dimen/padding_mini"
-            android:padding="@dimen/padding_mini"
-            tools:text="@string/no_driver" />
+            android:layout_margin="@dimen/padding_mini"
+            android:padding="@dimen/padding_mini">
+
+            <TextView
+                android:id="@+id/tv_dispatch_driver_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="4.9"
+                android:padding="@dimen/padding_mini"
+                tools:text="@string/no_driver" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="@dimen/padding_midi"
+                android:layout_weight="0.1"
+                app:cardCornerRadius="@dimen/margin_maxi"
+                android:id="@+id/cv_notification"
+                app:cardBackgroundColor="@color/reject"/>
+
+        </LinearLayout>
+
+
 
     </RelativeLayout>
 
