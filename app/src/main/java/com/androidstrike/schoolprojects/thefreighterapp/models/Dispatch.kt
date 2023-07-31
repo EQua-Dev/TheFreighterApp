@@ -34,5 +34,6 @@ data class Dispatch(
     val dateWeighed: String = "",
     val datePickedUp: String = "",
     val dateDelivered: String = "",
-    val dispatchId: String = ""
+    val dispatchId: String = "",
+    val rating: String = ""
 )

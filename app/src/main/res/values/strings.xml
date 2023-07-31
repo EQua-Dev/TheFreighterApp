@@ -161,6 +161,10 @@
     <string name="show_in_map">show in map</string>
     <string name="not_available">N/A</string>
     <string name="location_updated">Location updated</string>
+    <string name="not_rated">not rated</string>
+    <string name="dispatch_weigher">Weigher: %s</string>
+    <string name="date_weighed">Date weighed: %s</string>
+    <string name="submit_rating">submit rating</string>
 
     <string-array name="dispatch_tab_titles">
         <item>Pending</item>
