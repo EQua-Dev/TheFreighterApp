@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/fund_wallet_title"
+        android:textAlignment="center"
+        android:textSize="@dimen/text_l"
+        android:layout_margin="@dimen/padding_mini"
+        android:textStyle="bold"/>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_input_layout_fund_wallet_amount"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_mini"
+        android:hint="@string/fund_wallet_amount"
+        android:paddingTop="@dimen/padding_midi">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/fund_wallet_amount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/fund_wallet_amount"
+            android:importantForAutofill="no"
+            android:inputType="numberDecimal"
+            android:labelFor="@id/fund_wallet_amount" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:layout_margin="@dimen/padding_mini"
+        android:padding="@dimen/padding_mini">
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:backgroundTint="@color/reject"
+            android:layout_margin="@dimen/padding_mini"
+            android:id="@+id/btn_cancel_fund"
+            app:cornerRadius="@dimen/margin_mini"
+            android:text="@string/new_dispatch_cancel_btn"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="@dimen/padding_mini"
+            android:id="@+id/btn_fund_wallet"
+            app:cornerRadius="@dimen/margin_mini"
+            android:text="@string/fund_wallet_title"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>

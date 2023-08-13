@@ -165,6 +165,13 @@
     <string name="dispatch_weigher">Weigher: %s</string>
     <string name="date_weighed">Date weighed: %s</string>
     <string name="submit_rating">submit rating</string>
+    <string name="wallet_balance_text">Balance</string>
+    <string name="wallet_add_funds_text">Fund Wallet</string>
+    <string name="wallet_history_title">Transaction History</string>
+    <string name="no_wallet_account">You do not have a wallet</string>
+    <string name="create_wallet">create wallet</string>
+    <string name="fund_wallet_title">Fund Wallet</string>
+    <string name="fund_wallet_amount">Enter Amount (€)</string>
 
     <string-array name="dispatch_tab_titles">
         <item>Pending</item>

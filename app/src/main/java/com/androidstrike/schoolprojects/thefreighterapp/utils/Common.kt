@@ -7,12 +7,15 @@ import com.google.firebase.ktx.Firebase
 object Common {
 
 
-    const val USER_REF = "Freighter App Users"
-    const val DISPATCH_REF = "Freighter App Dispatches"
+    private const val USER_REF = "Freighter App Users"
+    private const val DISPATCH_REF = "Freighter App Dispatches"
+    private const val WALLET_REF = "Freighter App Wallets"
+    const val WALLET_HISTORY_REF = "Wallet History"
 
 
     const val DATE_FORMAT = "EEEE, dd MMM, yyyy"
     const val DATE_FORMAT_SHORT = "EEE, dd MMM, yyyy"
+    const val DATE_FORMAT_LONG = "EEE, dd MMM, yyyy | hh:mm a"
     const val NOT_AVAILABLE = "N/A"
     const val MIN_PASSWORD = 8
 
@@ -27,9 +30,16 @@ object Common {
     const val STATUS_RATED = "rated" //client has rated the service
     const val STATUS_CANCELLED = "rated"
 
+    const val REASON_ACCOUNT_FUND = "Account Fund"
+    const val REASON_PICKUP_PAY = "Dispatch Pickup"
+    const val REASON_DELIVERY_PAY = "Dispatch Delivery"
+    const val REASON_WEIGH_PAY = "Dispatch Weigh"
+
     val auth = FirebaseAuth.getInstance()
     val userCollectionRef = Firebase.firestore.collection(USER_REF)
     val dispatchCollectionRef = Firebase.firestore.collection(DISPATCH_REF)
+    val walletCollectionRef = Firebase.firestore.collection(WALLET_REF)
+    val walletHistoryCollectionRef = Firebase.firestore.collection(WALLET_HISTORY_REF)
 
     //N1 => user suggests different price from the initial driver price
     //N2 => driver counters the user price with another

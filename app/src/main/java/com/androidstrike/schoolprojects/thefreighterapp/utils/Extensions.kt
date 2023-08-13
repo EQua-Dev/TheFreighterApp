@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import android.telephony.PhoneNumberUtils
 import com.androidstrike.schoolprojects.thefreighterapp.R
+import java.security.MessageDigest
 
 
 /**
@@ -286,5 +287,17 @@ fun isInvalidDate(dateString: String, format: String): Boolean {
 fun isPasswordValid(password: String): Boolean {
     val pattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$".toRegex()
     return !pattern.matches(password)
+}
+fun hashString(input: String): String {
+    val messageDigest = MessageDigest.getInstance("MD5")
+    val bytes = messageDigest.digest(input.toByteArray())
+    val stringBuilder = StringBuilder()
+
+    for (byte in bytes) {
+        // Convert each byte to a hex string
+        stringBuilder.append(String.format("%02x", byte))
+    }
+
+    return stringBuilder.toString()
 }
 

@@ -5,11 +5,85 @@
     android:layout_height="match_parent"
     tools:context=".features.home.client.wallet.Wallet">
 
-    <TextView
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title_wallet"
         android:layout_centerInParent="true"
-        android:textSize="@dimen/text_xl"/>
+        android:id="@+id/no_wallet_layout"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:orientation="vertical">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_wallet_account"
+            android:textStyle="italic"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_wallet"
+            android:textStyle="bold"
+            android:textColor="@color/primary"
+            android:layout_gravity="center"
+            android:padding="@dimen/padding_mini"
+            android:id="@+id/create_wallet"/>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/wallet_layout"
+        tools:visibility="visible"
+        android:visibility="gone">
+        <TextView
+            android:id="@+id/wallet_balance_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_xs"
+            android:layout_marginStart="@dimen/margin_midi"
+            android:padding="@dimen/padding_mini"
+            android:text="@string/wallet_balance_text" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/wallet_balance_title"
+            android:id="@+id/wallet_balance"
+            android:layout_marginStart="@dimen/margin_midi"
+            android:textSize="@dimen/text_xl"
+            tools:text="€00.00" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/wallet_balance_title"
+            android:id="@+id/wallet_add_funds_text"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="@dimen/margin_midi"
+            android:textSize="@dimen/text_xs"
+            android:textStyle="bold"
+            android:textColor="@color/primary"
+            android:text="@string/wallet_add_funds_text" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/wallet_history_title"
+            android:layout_below="@id/wallet_add_funds_text"
+            android:id="@+id/wallet_history_title"
+            android:textStyle="bold"
+            android:padding="@dimen/padding_mini"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/wallet_history_title"
+            android:layout_margin="@dimen/padding_mini"
+            android:padding="@dimen/padding_mini"
+            tools:listitem="@layout/item_wallet_history_layout"
+            android:id="@+id/rv_wallet_history"/>
+
+    </RelativeLayout>
 </RelativeLayout>
