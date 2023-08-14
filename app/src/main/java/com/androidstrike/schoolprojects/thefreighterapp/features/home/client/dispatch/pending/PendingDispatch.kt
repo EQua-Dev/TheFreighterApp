@@ -31,6 +31,8 @@ import com.androidstrike.schoolprojects.thefreighterapp.features.home.client.dis
 import com.androidstrike.schoolprojects.thefreighterapp.models.Dispatch
 import com.androidstrike.schoolprojects.thefreighterapp.models.InterestedDriverDetail
 import com.androidstrike.schoolprojects.thefreighterapp.models.UserData
+import com.androidstrike.schoolprojects.thefreighterapp.models.WalletData
+import com.androidstrike.schoolprojects.thefreighterapp.models.WalletHistory
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.DATE_FORMAT
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.DATE_FORMAT_SHORT
@@ -45,6 +47,7 @@ import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.STATUS_PEND
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.STATUS_RATED
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.dispatchCollectionRef
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.userCollectionRef
+import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.walletCollectionRef
 import com.androidstrike.schoolprojects.thefreighterapp.utils.enable
 import com.androidstrike.schoolprojects.thefreighterapp.utils.getDate
 import com.androidstrike.schoolprojects.thefreighterapp.utils.hideProgress
@@ -58,6 +61,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.QuerySnapshot
 import com.hbb20.CountryCodePicker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -629,7 +633,13 @@ class PendingDispatch : Fragment() {
                     CoroutineScope(Dispatchers.IO).launch {
                         val dispatchCollectionRef =
                             dispatchCollectionRef.document(dispatch.dispatchId)
-
+                        val fortyPercent = dispatch.amount.toDouble().times(0.4)
+                        addDriverFunds(
+                            fortyPercent,
+                            dispatch.client,
+                            dispatch.driver,
+                            Common.REASON_PICKUP_PAY
+                        )
                         val updates = hashMapOf<String, Any>(
                             "statusChangeTime" to System.currentTimeMillis()
                                 .toString(),
@@ -641,6 +651,7 @@ class PendingDispatch : Fragment() {
                             .addOnSuccessListener {
                                 hideProgress()
                                 confirmDialog.dismiss()
+
                                 requireContext().toast(resources.getString(R.string.update_success))
                                 dialog.dismiss()
                                 getRealtimePendingDispatch(loggedUser)
@@ -673,7 +684,13 @@ class PendingDispatch : Fragment() {
                     CoroutineScope(Dispatchers.IO).launch {
                         val dispatchCollectionRef =
                             dispatchCollectionRef.document(dispatch.dispatchId)
-
+                        val sixtyPercent = dispatch.amount.toDouble().times(0.6)
+                        addDriverFunds(
+                            sixtyPercent,
+                            dispatch.client,
+                            dispatch.driver,
+                            Common.REASON_DELIVERY_PAY
+                        )
                         val updates = hashMapOf<String, Any>(
                             "statusChangeTime" to System.currentTimeMillis()
                                 .toString(),
@@ -741,7 +758,8 @@ class PendingDispatch : Fragment() {
                 visible(true)
                 if (loggedUser.role == driverRole) {
                     enable(
-                        dispatch.userLocationRequest)
+                        dispatch.userLocationRequest
+                    )
                     text = resources.getString(R.string.update_location)
                     setOnClickListener {
                         //get the driver's current location and populate the database
@@ -764,6 +782,108 @@ class PendingDispatch : Fragment() {
         }
 
         dialog.show()
+    }
+
+    private fun addDriverFunds(amount: Double, client: String, driver: String, reason: String) {
+        requireContext().showProgress()
+        CoroutineScope(Dispatchers.IO).launch {
+            walletCollectionRef
+                .get()
+                .addOnSuccessListener { querySnapshot: QuerySnapshot ->
+
+                    for (document in querySnapshot.documents) {
+                        val item = document.toObject(WalletData::class.java)
+                        if (item?.walletOwner == client) {
+                            val newClientBalance = item.walletBalance.toDouble() - amount
+                            CoroutineScope(Dispatchers.IO).launch {
+                                walletCollectionRef.document(item.walletId)
+                                    .update("walletBalance", newClientBalance.toString())
+                                    .addOnSuccessListener {
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            val walletHistoryReference =
+                                                walletCollectionRef.document(item.walletId)
+                                                    .collection(
+                                                        Common.WALLET_HISTORY_REF
+                                                    )
+                                            val walletTransaction = WalletHistory(
+                                                transactionDate = getDate(
+                                                    System.currentTimeMillis(),
+                                                    Common.DATE_FORMAT_LONG
+                                                ),
+                                                transactionType = "DR",
+                                                transactionAmount = resources.getString(
+                                                    R.string.money_text,
+                                                    amount.toString()
+                                                ),
+                                                transactionReason = reason
+                                            )
+
+                                            walletHistoryReference.document(
+                                                System.currentTimeMillis().toString()
+                                            ).set(walletTransaction).await()
+                                        }
+
+                                        //add to driver wallet
+                                        walletCollectionRef
+                                            .get()
+                                            .addOnSuccessListener { driverWalletSnapshot: QuerySnapshot ->
+                                                for (wallet in driverWalletSnapshot.documents) {
+                                                    val driverWallet =
+                                                        wallet.toObject(WalletData::class.java)
+                                                    if (driverWallet?.walletOwner == driver) {
+                                                        //add to weigher's wallet balance
+                                                        val newBalance =
+                                                            driverWallet.walletBalance.toDouble() + amount
+                                                        walletCollectionRef.document(driverWallet.walletId)
+                                                            .update(
+                                                                "walletBalance",
+                                                                newBalance.toString()
+                                                            ).addOnSuccessListener {
+                                                                CoroutineScope(Dispatchers.IO).launch {
+                                                                    val walletHistoryReference =
+                                                                        walletCollectionRef.document(
+                                                                            driverWallet.walletId
+                                                                        ).collection(
+                                                                            Common.WALLET_HISTORY_REF
+                                                                        )
+                                                                    val walletTransaction =
+                                                                        WalletHistory(
+                                                                            transactionDate = getDate(
+                                                                                System.currentTimeMillis(),
+                                                                                Common.DATE_FORMAT_LONG
+                                                                            ),
+                                                                            transactionType = "CR",
+                                                                            transactionAmount = resources.getString(
+                                                                                R.string.money_text,
+                                                                                amount.toString()
+                                                                            ),
+                                                                            transactionReason = reason
+                                                                        )
+
+                                                                    walletHistoryReference.document(
+                                                                        System.currentTimeMillis()
+                                                                            .toString()
+                                                                    ).set(walletTransaction).await()
+                                                                }
+                                                                hideProgress()
+                                                            }
+                                                    }
+                                                }
+
+                                            }
+                                    }
+                            }
+                        }
+                        //get the wallet of the client
+                        //subtract the weigher's cost
+                        //update the new balance
+                        //get the weigher's wallet
+                        //add the funds to the weigher's wallet
+                        //update the new balance
+                    }
+                }
+        }
+
     }
 
     private fun launchWeigherAddWeightDialog(loggedUser: UserData, model: Dispatch) {
@@ -810,6 +930,7 @@ class PendingDispatch : Fragment() {
                         dispatchCollectionRef.update(updates).addOnSuccessListener {
                             hideProgress()
                             dialog.dismiss()
+                            addWeighingFunds(model.dispatchId, model.weigher, model.client)
                             getRealtimePendingDispatch(loggedUser)
 
                         }
@@ -820,6 +941,121 @@ class PendingDispatch : Fragment() {
         }
 
         dialog.show()
+
+    }
+
+    private fun addWeighingFunds(dispatchId: String, weigher: String, client: String) {
+        requireContext().showProgress()
+        CoroutineScope(Dispatchers.IO).launch {
+            walletCollectionRef
+                .get()
+                .addOnSuccessListener { querySnapshot: QuerySnapshot ->
+
+                    for (document in querySnapshot.documents) {
+                        val item = document.toObject(WalletData::class.java)
+                        if (item?.walletOwner == client) {
+                            val newClientBalance =
+                                item.walletBalance.toDouble() - getDispatchDriver(weigher)?.weigherCost?.toDouble()!!
+                            CoroutineScope(Dispatchers.IO).launch {
+                                walletCollectionRef.document(item.walletId)
+                                    .update("walletBalance", newClientBalance.toString())
+                                    .addOnSuccessListener {
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            val walletHistoryReference =
+                                                walletCollectionRef.document(item.walletId)
+                                                    .collection(
+                                                        Common.WALLET_HISTORY_REF
+                                                    )
+
+                                            val walletTransaction = WalletHistory(
+                                                transactionDate = getDate(
+                                                    System.currentTimeMillis(),
+                                                    Common.DATE_FORMAT_LONG
+                                                ),
+                                                transactionType = "DR",
+                                                transactionAmount = resources.getString(
+                                                    R.string.money_text,
+                                                    getDispatchDriver(weigher)?.weigherCost
+                                                ),
+                                                transactionReason = Common.REASON_WEIGH_PAY
+                                            )
+
+                                            walletHistoryReference.document(
+                                                System.currentTimeMillis().toString()
+                                            ).set(walletTransaction).await()
+
+
+                                        }
+                                        walletCollectionRef
+                                            .get()
+                                            .addOnSuccessListener { weigherWalletSnapshot: QuerySnapshot ->
+                                                for (wallet in weigherWalletSnapshot.documents) {
+                                                    val weigherWallet =
+                                                        wallet.toObject(WalletData::class.java)
+                                                    if (weigherWallet?.walletOwner == weigher) {
+                                                        //add to weigher's wallet balance
+                                                        val newBalance =
+                                                            weigherWallet.walletBalance.toDouble() + getDispatchDriver(
+                                                                weigher
+                                                            )?.weigherCost?.toDouble()!!
+                                                        Log.d(TAG, "addWeighingFunds: $newBalance")
+                                                        Log.d(
+                                                            TAG,
+                                                            "addWeighingFunds: ${weigherWallet.walletId}"
+                                                        )
+                                                        walletCollectionRef.document(weigherWallet.walletId)
+                                                            .update(
+                                                                "walletBalance",
+                                                                newBalance.toString()
+                                                            ).addOnSuccessListener {
+                                                            CoroutineScope(Dispatchers.IO).launch {
+                                                                val walletHistoryReference =
+                                                                    walletCollectionRef.document(
+                                                                        weigherWallet.walletId
+                                                                    ).collection(
+                                                                        Common.WALLET_HISTORY_REF
+                                                                    )
+                                                                val walletTransaction =
+                                                                    WalletHistory(
+                                                                        transactionDate = getDate(
+                                                                            System.currentTimeMillis(),
+                                                                            Common.DATE_FORMAT_LONG
+                                                                        ),
+                                                                        transactionType = "CR",
+                                                                        transactionAmount = resources.getString(
+                                                                            R.string.money_text,
+                                                                            getDispatchDriver(
+                                                                                weigher
+                                                                            )?.weigherCost
+                                                                        ),
+                                                                        transactionReason = Common.REASON_WEIGH_PAY
+                                                                    )
+
+                                                                walletHistoryReference.document(
+                                                                    System.currentTimeMillis()
+                                                                        .toString()
+                                                                ).set(walletTransaction).await()
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                            }
+                                        hideProgress()
+                                    }
+                            }
+                        }
+                        //get the wallet of the client
+                        //subtract the weigher's cost
+                        //update the new balance
+                        //get the weigher's wallet
+                        //add the funds to the weigher's wallet
+                        //update the new balance
+                    }
+
+                }
+        }
+        // }
 
     }
 
@@ -1542,7 +1778,7 @@ class PendingDispatch : Fragment() {
 
     private fun getDispatchDriver(driver: String): UserData? {
 
-        requireContext().showProgress()
+//        requireContext().showProgress()
         val deferred = CoroutineScope(Dispatchers.IO).async {
             try {
                 val snapshot = Common.userCollectionRef.document(driver).get().await()
@@ -1558,7 +1794,7 @@ class PendingDispatch : Fragment() {
         }
 
         val driverUser = runBlocking { deferred.await() }
-        hideProgress()
+        //hideProgress()
 
         return driverUser
     }

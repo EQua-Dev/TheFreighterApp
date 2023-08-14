@@ -71,9 +71,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/wallet_history_title"
-            android:layout_below="@id/wallet_add_funds_text"
+            android:layout_below="@id/wallet_balance"
             android:id="@+id/wallet_history_title"
             android:textStyle="bold"
+            android:layout_margin="@dimen/margin_mini"
             android:padding="@dimen/padding_mini"/>
 
         <androidx.recyclerview.widget.RecyclerView

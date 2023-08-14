@@ -82,6 +82,8 @@ class Wallet : Fragment() {
         weigherRole = resources.getString(R.string.weigher)
 
         with(binding) {
+            walletLayout.visible(false)
+            noWalletLayout.visible(false)
             val layoutManager = LinearLayoutManager(requireContext())
             rvWalletHistory.layoutManager = layoutManager
             rvWalletHistory.addItemDecoration(
@@ -108,8 +110,6 @@ class Wallet : Fragment() {
                         if (item?.walletOwner == auth.uid) {
                             hideProgress()
                             Log.d(TAG, "getWalletDetails: ${item?.walletOwner == auth.uid} ")
-                            binding.walletLayout.visible(true)
-                            binding.noWalletLayout.visible(false)
                             fetchWalletDetails(item!!.walletId)
                         } else {
                             hideProgress()
@@ -143,10 +143,13 @@ class Wallet : Fragment() {
                     hideProgress()
                     val walletInfo = snapshot.toObject(WalletData::class.java)
                     withContext(Dispatchers.Main){
-                        binding.walletBalance.text = resources.getString(
-                            R.string.money_text,
-                            walletInfo!!.walletBalance.toString()
-                        )
+                        binding.walletBalance.apply {
+                            visible(true)
+                            text = resources.getString(
+                                R.string.money_text,
+                                walletInfo!!.walletBalance.toString()
+                            )
+                        }
                         binding.walletAddFundsText.apply {
                             visible(getUser(auth.uid!!)!!.role == clientRole)
                             setOnClickListener {

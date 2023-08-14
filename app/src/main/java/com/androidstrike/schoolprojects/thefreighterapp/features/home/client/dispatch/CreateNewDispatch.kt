@@ -280,7 +280,8 @@ class CreateNewDispatch : Fragment() {
                         dropOffCountry = dropOffCountry,
                         pickupDate = pickupDate,
                         dispatchId = dispatchId,
-                        dateCreated = System.currentTimeMillis().toString()
+                        dateCreated = System.currentTimeMillis().toString(),
+                        statusChangeTime = System.currentTimeMillis().toString()
                     )
 
                     createNewDispatch(newDispatch)
