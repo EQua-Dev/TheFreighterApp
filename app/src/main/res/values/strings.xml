@@ -172,6 +172,20 @@
     <string name="create_wallet">create wallet</string>
     <string name="fund_wallet_title">Fund Wallet</string>
     <string name="fund_wallet_amount">Enter Amount (€)</string>
+    <string name="date_joined">Registered on %s</string>
+    <string name="email_title">Email</string>
+    <string name="phone_number_title">Phone Number</string>
+    <string name="edit">edit</string>
+    <string name="dob_title">Date of Birth</string>
+    <string name="country_of_residence_title">Country of Residence</string>
+    <string name="vehicle_plate_number_title">Vehicle Plate Number</string>
+    <string name="driver_license_number_title">Driver License Number</string>
+    <string name="coverage_country1_title">Coverage Location 1</string>
+    <string name="coverage_country2_title">Coverage Location 2</string>
+    <string name="driver_contact_person_name_title">Contact Person Name</string>
+    <string name="driver_contact_person_phone_title">Contact Person Phone Number</string>
+    <string name="driver_contact_person_address_title">Contact Person Address</string>
+    <string name="weighing_cost_title">Weighing Cost</string>
 
     <string-array name="dispatch_tab_titles">
         <item>Pending</item>

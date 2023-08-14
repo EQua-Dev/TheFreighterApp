@@ -1,15 +1,483 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".features.home.client.profile.Profile">
+
+
+    <RelativeLayout
+        android:id="@+id/profile_icon_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/margin_midi">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:contentDescription="@string/title_profile"
+            android:src="@drawable/bg_circle" />
+
+        <TextView
+            android:id="@+id/profile_icon_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/text_xl"
+            tools:text="RR" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/profile_name_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        tools:text="@tools:sample/full_names" />
+
+    <TextView
+        android:id="@+id/profile_date_joined_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textSize="@dimen/text_xxs"
+        tools:text="@string/date_joined" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title_profile"
-        android:layout_centerInParent="true"
-        android:textSize="@dimen/text_xl"/>
+        android:layout_margin="@dimen/padding_mini"
+        android:text="@string/email_title"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_xxxs" />
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/profile_user_email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding_mini"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_xxs"
+        tools:text="email@user.com" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="4">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_mini"
+                android:text="@string/phone_number_title"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_xxxs" />
+
+            <TextView
+                android:id="@+id/profile_user_phone_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_mini"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_xxs"
+                tools:text="email@user.com" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_profile_edit_phone_number"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="@string/edit"
+            android:textAlignment="center"
+            android:textColor="@color/primary"
+            android:textStyle="bold" />
+
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding_mini"
+        android:text="@string/dob_title"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_xxxs" />
+
+    <TextView
+        android:id="@+id/profile_user_date_of_birth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding_mini"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_xxs"
+        tools:text="@tools:sample/date/ddmmyy" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="4">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_mini"
+                android:text="@string/country_of_residence_title"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_xxxs" />
+
+            <TextView
+                android:id="@+id/profile_user_country_of_residence"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_mini"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_xxs"
+                tools:text="@tools:sample/cities" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_profile_edit_country_of_residence"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="@string/edit"
+            android:textAlignment="center"
+            android:textColor="@color/primary"
+            android:textStyle="bold" />
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/vehicle_plate_number_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding_mini"
+        android:text="@string/vehicle_plate_number_title"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_xxxs" />
+
+    <TextView
+        android:id="@+id/profile_user_vehicle_plate_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding_mini"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_xxs"
+        tools:text="@tools:sample/date/ddmmyy" />
+
+    <TextView
+        android:id="@+id/driver_license_number_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding_mini"
+        android:text="@string/driver_license_number_title"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_xxxs" />
+
+    <TextView
+        android:id="@+id/profile_user_driver_license_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding_mini"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_xxs"
+        tools:text="@tools:sample/date/ddmmyy" />
+
+    <LinearLayout
+        android:id="@+id/layout_coverage_location1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="4">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_mini"
+                android:text="@string/coverage_country1_title"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_xxxs" />
+
+            <TextView
+                android:id="@+id/profile_user_coverage_country1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_mini"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_xxs"
+                tools:text="@tools:sample/cities" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_profile_edit_coverage_country1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="@string/edit"
+            android:textAlignment="center"
+            android:textColor="@color/primary"
+            android:textStyle="bold" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_coverage_location2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="4">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_mini"
+                android:text="@string/coverage_country2_title"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_xxxs" />
+
+            <TextView
+                android:id="@+id/profile_user_coverage_country2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_mini"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_xxs"
+                tools:text="@tools:sample/cities" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_profile_edit_coverage_country2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="@string/edit"
+            android:textAlignment="center"
+            android:textColor="@color/primary"
+            android:textStyle="bold" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_contact_person_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="4">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_mini"
+                android:text="@string/driver_contact_person_name_title"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_xxxs" />
+
+            <TextView
+                android:id="@+id/profile_user_driver_contact_person_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_mini"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_xxs"
+                tools:text="@tools:sample/full_names" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_profile_edit_driver_contact_person_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="@string/edit"
+            android:textAlignment="center"
+            android:textColor="@color/primary"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_contact_person_phone_number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="4">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_mini"
+                android:text="@string/driver_contact_person_phone_title"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_xxxs" />
+
+            <TextView
+                android:id="@+id/profile_user_driver_contact_person_phone_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_mini"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_xxs"
+                tools:text="@tools:sample/us_phones" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_profile_edit_driver_contact_person_phone_number"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="@string/edit"
+            android:textAlignment="center"
+            android:textColor="@color/primary"
+
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_contact_person_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="4">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_mini"
+                android:text="@string/driver_contact_person_address_title"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_xxxs" />
+
+            <TextView
+                android:id="@+id/profile_user_driver_contact_person_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_mini"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_xxs"
+                tools:text="@tools:sample/cities" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_profile_edit_driver_contact_person_address"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="@string/edit"
+            android:textAlignment="center"
+            android:textColor="@color/primary"
+
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_weighing_cost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="4">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_mini"
+                android:text="@string/weighing_cost_title"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_xxxs" />
+
+            <TextView
+                android:id="@+id/profile_user_weighing_cost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/padding_mini"
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_xxs"
+                tools:text="@tools:sample/cities" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_profile_edit_weighing"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="@string/edit"
+            android:textAlignment="center"
+            android:textColor="@color/primary"
+
+            android:textStyle="bold" />
+
+    </LinearLayout>
+</LinearLayout>
