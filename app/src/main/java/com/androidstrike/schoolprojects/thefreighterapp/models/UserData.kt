@@ -23,5 +23,6 @@ data class UserData(
     val driverContactPersonCity: String = "",
     val driverContactPersonCountry: String = "",
     val weigherCost: String = "",
-    val dispatch: List<String> = listOf()
+    val dispatch: List<String> = listOf(),
+    val wallet: String = ""
 ): Parcelable
