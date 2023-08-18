@@ -32,6 +32,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.firestore.QuerySnapshot
+import com.hbb20.CountryCodePicker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -138,7 +139,7 @@ class CreateNewDispatch : Fragment() {
                 dispatchPickupProvince.setText(dispatch.pickupProvince)
                 dispatchDropOffAddress.setText(dispatch.dropOffAddress)
                 dispatchDropOffProvince.setText(dispatch.dropOffProvince)
-                dispatchDropOffCountry.setDefaultCountryUsingNameCode(dispatch.dropOffCountryCode)
+                dispatchDropOffCountry.setCountryForNameCode(dispatch.dropOffCountryCode)
                 dispatchPickupDate.setText(dispatch.pickupDate)
 
             }
@@ -258,9 +259,11 @@ class CreateNewDispatch : Fragment() {
                 pickupAddress = dispatchPickupAddress.text.toString().trim()
                 pickupProvince = dispatchPickupProvince.text.toString().trim()
                 pickupCountry = dispatchPickupCountry.selectedCountryName
+                pickupCountryCode = dispatchPickupCountry.selectedCountryNameCode
                 dropOffAddress = dispatchDropOffAddress.text.toString().trim()
                 dropOffProvince = dispatchDropOffProvince.text.toString().trim()
                 dropOffCountry = dispatchDropOffCountry.selectedCountryName
+                dropOffCountryCode = dispatchDropOffCountry.selectedCountryNameCode
                 pickupDate = dispatchPickupDate.text.toString().trim()
 
 
@@ -275,9 +278,11 @@ class CreateNewDispatch : Fragment() {
                         pickupAddress = pickupAddress,
                         pickupProvince = pickupProvince,
                         pickupCountry = pickupCountry,
+                        pickupCountryCode = pickupCountryCode,
                         dropOffAddress = dropOffAddress,
                         dropOffProvince = dropOffProvince,
                         dropOffCountry = dropOffCountry,
+                        dropOffCountryCode = dropOffCountryCode,
                         pickupDate = pickupDate,
                         dispatchId = dispatchId,
                         dateCreated = System.currentTimeMillis().toString(),
@@ -299,14 +304,17 @@ class CreateNewDispatch : Fragment() {
                 pickupAddress = dispatchPickupAddress.text.toString().trim()
                 pickupProvince = dispatchPickupProvince.text.toString().trim()
                 pickupCountry = dispatchPickupCountry.selectedCountryName
+                pickupCountryCode = dispatchPickupCountry.selectedCountryNameCode
                 dropOffAddress = dispatchDropOffAddress.text.toString().trim()
                 dropOffProvince = dispatchDropOffProvince.text.toString().trim()
                 dropOffCountry = dispatchDropOffCountry.selectedCountryName
+                dropOffCountryCode = dispatchDropOffCountry.selectedCountryNameCode
                 pickupDate = dispatchPickupDate.text.toString().trim()
 
 
                 if (packageType.isNotEmpty() && pickupAddress.isNotEmpty() && pickupProvince.isNotEmpty() && pickupDate.isNotEmpty() && dropOffAddress.isNotEmpty() && dropOffProvince.isNotEmpty()) {
 
+                    val newId = dispatchId.ifEmpty { System.currentTimeMillis().toString() }
                     val newDispatch = Dispatch(
                         packageType = packageType,
                         client = client,
@@ -314,12 +322,15 @@ class CreateNewDispatch : Fragment() {
                         pickupAddress = pickupAddress,
                         pickupProvince = pickupProvince,
                         pickupCountry = pickupCountry,
+                        pickupCountryCode = pickupCountryCode,
                         dropOffAddress = dropOffAddress,
                         dropOffProvince = dropOffProvince,
                         dropOffCountry = dropOffCountry,
+                        dropOffCountryCode = dropOffCountryCode,
                         pickupDate = pickupDate,
                         dispatchId = dispatchId,
-                        dateCreated = System.currentTimeMillis().toString()
+                        dateCreated = System.currentTimeMillis().toString(),
+                        statusChangeTime = System.currentTimeMillis().toString()
                     )
 
                     launchExternalContractorsDialog(newDispatch)
@@ -344,9 +355,11 @@ class CreateNewDispatch : Fragment() {
                 pickupAddress = dispatchPickupAddress.text.toString().trim()
                 pickupProvince = dispatchPickupProvince.text.toString().trim()
                 pickupCountry = dispatchPickupCountry.selectedCountryName
+                pickupCountryCode = dispatchPickupCountry.selectedCountryNameCode
                 dropOffAddress = dispatchDropOffAddress.text.toString().trim()
                 dropOffProvince = dispatchDropOffProvince.text.toString().trim()
                 dropOffCountry = dispatchDropOffCountry.selectedCountryName
+                dropOffCountryCode = dispatchDropOffCountry.selectedCountryNameCode
                 pickupDate = dispatchPickupDate.text.toString().trim()
                 val newDispatchDraft = Dispatch(
                     status = status,
@@ -357,12 +370,16 @@ class CreateNewDispatch : Fragment() {
                     pickupAddress = pickupAddress,
                     pickupProvince = pickupProvince,
                     pickupCountry = pickupCountry,
+                    pickupCountryCode = pickupCountryCode,
                     dropOffAddress = dropOffAddress,
                     dropOffProvince = dropOffProvince,
                     dropOffCountry = dropOffCountry,
+                    dropOffCountryCode = dropOffCountryCode,
                     pickupDate = pickupDate,
-                    dispatchId = System.currentTimeMillis().toString(),
-                    dateCreated = System.currentTimeMillis().toString()
+                    dispatchId = dispatchId,
+                    dateCreated = System.currentTimeMillis().toString(),
+                    statusChangeTime = System.currentTimeMillis().toString()
+
                 )
                 createNewDispatch(newDispatchDraft)
             }
