@@ -601,7 +601,7 @@ class CreateNewDispatch : Fragment() {
 
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    activity?.toast(e.message.toString())
+                    //activity?.toast(e.message.toString())
                     Log.d(TAG, "createNewDispatch: ${e.message.toString()}")
                 }
             }
