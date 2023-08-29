@@ -7,6 +7,8 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -45,6 +47,7 @@ import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.STATUS_IN_T
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.STATUS_NEGOTIATING_PRICE
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.STATUS_PENDING_DRIVER
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.STATUS_RATED
+import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.auth
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.dispatchCollectionRef
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.userCollectionRef
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.walletCollectionRef
@@ -104,22 +107,32 @@ class PendingDispatch : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
+        Log.d(TAG, "onCreateView: ")
         _binding = FragmentPendingDispatchBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        Log.d(TAG, "onViewCreated: ")
         clientRole = resources.getString(R.string.client)
         driverRole = resources.getString(R.string.driver)
         weigherRole = resources.getString(R.string.weigher)
 
-        getUser("")
+        getRealtimePendingDispatch()
 
         with(binding) {
             fabAddDispatch.setOnClickListener {
-                getUser(resources.getString(R.string.add_dispatch))
+                parentFragment?.let { parentFragment ->
+                    val navController = parentFragment.findNavController()
+                    val navToNewDispatch =
+                        DispatchScreenLandingDirections.actionPendingDispatchToCreateNewDispatch(
+                            getUser(auth.uid!!)!!,
+                            ""
+                        )
+                    navController.navigate(navToNewDispatch)
+                }
+                //getUser(resources.getString(R.string.add_dispatch))
             }
             val layoutManager = LinearLayoutManager(requireContext())
             rvOngoingDispatchList.layoutManager = layoutManager
@@ -133,42 +146,41 @@ class PendingDispatch : Fragment() {
 
     }
 
-    private fun getUser(request: String) {
+    private fun getUsern(request: String) {
         var loggedUser = UserData()
+        requireContext().showProgress()
 
         CoroutineScope(Dispatchers.IO).launch {
             Common.userCollectionRef.document(Common.auth.uid.toString())
 //            Common.userCollectionRef.document("ElE9dfN1rXVaJ0MD8IsJv046BnV2")
                 .addSnapshotListener { value, error ->
                     if (error != null) {
+                        hideProgress()
                         requireContext().toast(error.message.toString())
                         return@addSnapshotListener
                     }
                     if (value != null && value.exists()) {
                         loggedUser = value.toObject(UserData::class.java)!!
-                        if (loggedUser.role != resources.getString(R.string.client))
-                            binding.fabAddDispatch.visible(false)
+                        if (loggedUser.role == resources.getString(R.string.client))
+                            Log.d(TAG, "getUser: ${loggedUser.role}")
+                            hideProgress()
+
+                        binding.fabAddDispatch.visible(true)
 
                         if (request == resources.getString(R.string.add_dispatch)) {
-                            parentFragment?.let { parentFragment ->
-                                val navController = parentFragment.findNavController()
-                                val navToNewDispatch =
-                                    DispatchScreenLandingDirections.actionPendingDispatchToCreateNewDispatch(
-                                        loggedUser,
-                                        ""
-                                    )
-                                navController.navigate(navToNewDispatch)
-                            }
+
                         } else {
-                            getRealtimePendingDispatch(loggedUser)
+                            hideProgress()
+                            getRealtimePendingDispatch()
                         }
                     }
                 }
         }
     }
 
-    private fun getRealtimePendingDispatch(loggedUser: UserData) {
+    private fun getRealtimePendingDispatch() {
 
+        val loggedUser = getUser(auth.uid!!)!!
         when (loggedUser.role) {
             resources.getString(R.string.client) -> {
                 pendingDispatches =
@@ -251,7 +263,8 @@ class PendingDispatch : Fragment() {
                                         dispatchCollectionRef.update(updates).addOnSuccessListener {
                                             hideProgress()
                                             requireContext().toast(resources.getString(R.string.time_added))
-                                            getRealtimePendingDispatch(loggedUser)
+                                            //Log.d(TAG, "onBindViewHolder: ")
+                                            getRealtimePendingDispatch()
                                         }
                                     }
                                 }
@@ -275,7 +288,7 @@ class PendingDispatch : Fragment() {
                                 navController.navigate(navToCreateDispatch)
                             }
                         } else {
-                            handleDispatchesStatuses(model, loggedUser)
+                            handleDispatchesStatuses(model)
                         }
                     }
                 }
@@ -290,12 +303,14 @@ class PendingDispatch : Fragment() {
 
     }
 
-    private fun handleDispatchesStatuses(model: Dispatch, loggedUser: UserData) {
+    private fun handleDispatchesStatuses(model: Dispatch) {
+
+        val loggedUser = getUser(auth.uid!!)!!
         when (model.status) {
             STATUS_AWAITING_WEIGHER -> {
                 //open dialog for weigher to input the weight
                 if (model.weigher == loggedUser.userId) {
-                    launchWeigherAddWeightDialog(loggedUser, model)
+                    launchWeigherAddWeightDialog(model)
                 } else {
                     requireContext().toast(resources.getString(R.string.waiting_for_weight))
                 }
@@ -403,7 +418,7 @@ class PendingDispatch : Fragment() {
                                                         .addOnSuccessListener {
                                                             hideProgress()
                                                             dialog.dismiss()
-                                                            getRealtimePendingDispatch(loggedUser)
+                                                            getRealtimePendingDispatch()
 
                                                         }
 
@@ -435,7 +450,7 @@ class PendingDispatch : Fragment() {
                                 requireContext().toast(resources.getString(R.string.no_driver_add_time))
                             } else {
                                 //display dialog to show list of interested drivers
-                                launchAssignDriverDialog(model, loggedUser)
+                                launchAssignDriverDialog(model)
                             }
                         } else {
                             //if not up to 10 minutes
@@ -463,7 +478,7 @@ class PendingDispatch : Fragment() {
 
             STATUS_AWAITING_DRIVER -> {
 
-                launchDispatchDetails(loggedUser, model, STATUS_AWAITING_DRIVER)
+                launchDispatchDetails(model, STATUS_AWAITING_DRIVER)
                 //if the client clicks in this status, a dialog pops up asking if the driver has arrived,
                 //if yes, it changes the status if nom it remains same
 
@@ -473,7 +488,7 @@ class PendingDispatch : Fragment() {
             }
 
             STATUS_IN_TRANSIT -> {
-                launchDispatchDetails(loggedUser, model, STATUS_IN_TRANSIT)
+                launchDispatchDetails(model, STATUS_IN_TRANSIT)
 
                 //if client clicks in this stage, they see the card of the dispatch detail
                 // and have the options to call or locate driver
@@ -496,7 +511,7 @@ class PendingDispatch : Fragment() {
 
     }
 
-    private fun launchDispatchDetails(loggedUser: UserData, dispatch: Dispatch, status: String) {
+    private fun launchDispatchDetails(dispatch: Dispatch, status: String) {
 
         val builder =
             layoutInflater.inflate(R.layout.fragment_dispatch_details, null)
@@ -549,6 +564,9 @@ class PendingDispatch : Fragment() {
         dispatchDetailOkayBtn.setOnClickListener {
             dialog.dismiss()
         }
+
+        val loggedUser = getUser(auth.uid!!)!!
+
 
 
         dispatchDateCreated.text = resources.getString(
@@ -654,7 +672,7 @@ class PendingDispatch : Fragment() {
 
                                 requireContext().toast(resources.getString(R.string.update_success))
                                 dialog.dismiss()
-                                getRealtimePendingDispatch(loggedUser)
+                                getRealtimePendingDispatch()
 
                             }
 
@@ -704,7 +722,7 @@ class PendingDispatch : Fragment() {
                                 confirmDialog.dismiss()
                                 requireContext().toast(resources.getString(R.string.update_success))
                                 dialog.dismiss()
-                                getRealtimePendingDispatch(loggedUser)
+                                getRealtimePendingDispatch()
 
                             }
 
@@ -886,7 +904,8 @@ class PendingDispatch : Fragment() {
 
     }
 
-    private fun launchWeigherAddWeightDialog(loggedUser: UserData, model: Dispatch) {
+    private fun launchWeigherAddWeightDialog(model: Dispatch) {
+
         val builder =
             layoutInflater.inflate(R.layout.set_weigher_charge_dialog, null)
 
@@ -931,7 +950,7 @@ class PendingDispatch : Fragment() {
                             hideProgress()
                             dialog.dismiss()
                             addWeighingFunds(model.dispatchId, model.weigher, model.client)
-                            getRealtimePendingDispatch(loggedUser)
+                            getRealtimePendingDispatch()
 
                         }
 
@@ -1184,7 +1203,7 @@ class PendingDispatch : Fragment() {
                                                     hideProgress()
                                                     dialog.dismiss()
                                                     requireContext().toast(resources.getString(R.string.update_success))
-                                                    getRealtimePendingDispatch(loggedUser)
+                                                    getRealtimePendingDispatch()
 
                                                 }
 
@@ -1277,7 +1296,7 @@ class PendingDispatch : Fragment() {
                                                     hideProgress()
                                                     dialog.dismiss()
                                                     requireContext().toast(resources.getString(R.string.update_success))
-                                                    launchAddPickerDetailsDialog(model, loggedUser)
+                                                    launchAddPickerDetailsDialog(model)
 
                                                 }
 
@@ -1411,7 +1430,7 @@ class PendingDispatch : Fragment() {
                                         .await()
                                     hideProgress()
                                     dialog.dismiss()
-                                    getRealtimePendingDispatch(loggedUser)
+                                    getRealtimePendingDispatch()
 
 
                                 } catch (e: Exception) {
@@ -1472,7 +1491,7 @@ class PendingDispatch : Fragment() {
         }
     }
 
-    private fun launchAssignDriverDialog(dispatch: Dispatch, loggedUser: UserData) {
+    private fun launchAssignDriverDialog(dispatch: Dispatch) {
 
         val builder =
             layoutInflater.inflate(R.layout.dialog_choose_external_weigher_layout, null)
@@ -1555,7 +1574,7 @@ class PendingDispatch : Fragment() {
                         dispatchCollectionRef.update(updates).addOnSuccessListener {
                             hideProgress()
                             dialog.dismiss()
-                            launchFirstNegotiationDialog(dispatch, driver, loggedUser)
+                            launchFirstNegotiationDialog(dispatch, driver)
 
                         }
 
@@ -1585,8 +1604,7 @@ class PendingDispatch : Fragment() {
 
     private fun launchFirstNegotiationDialog(
         dispatch: Dispatch,
-        driver: InterestedDriverDetail,
-        loggedUser: UserData
+        driver: InterestedDriverDetail
     ) {
 
         val builder =
@@ -1641,7 +1659,7 @@ class PendingDispatch : Fragment() {
 
                                 val updates = hashMapOf<String, Any>(
                                     "statusChangeTime" to System.currentTimeMillis().toString(),
-                                    "lastUpdater" to loggedUser.userId,
+                                    "lastUpdater" to auth.uid!!,
                                     "negotiationRound" to resources.getString(R.string.negotiation_one),
                                     "negotiationPrice1" to resources.getString(
                                         R.string.money_text,
@@ -1653,7 +1671,7 @@ class PendingDispatch : Fragment() {
                                     .addOnSuccessListener {
                                         hideProgress()
                                         dialog.dismiss()
-                                        getRealtimePendingDispatch(loggedUser)
+                                        getRealtimePendingDispatch()
 
                                     }
 
@@ -1677,7 +1695,7 @@ class PendingDispatch : Fragment() {
 
                 val updates = hashMapOf<String, Any>(
                     "statusChangeTime" to System.currentTimeMillis().toString(),
-                    "lastUpdater" to loggedUser.userId,
+                    "lastUpdater" to auth.uid!!,
                     "status" to STATUS_AWAITING_DRIVER,
                     "amount" to driver.driverCharge,
                 )
@@ -1694,7 +1712,7 @@ class PendingDispatch : Fragment() {
                         }
 
                         dialog.dismiss()
-                        launchAddPickerDetailsDialog(dispatch, loggedUser)
+                        launchAddPickerDetailsDialog(dispatch)
 
                     }
 
@@ -1706,7 +1724,7 @@ class PendingDispatch : Fragment() {
 
     }
 
-    private fun launchAddPickerDetailsDialog(dispatch: Dispatch, loggedUser: UserData) {
+    private fun launchAddPickerDetailsDialog(dispatch: Dispatch) {
 
         val builder =
             layoutInflater.inflate(
@@ -1766,7 +1784,7 @@ class PendingDispatch : Fragment() {
                                 hideProgress()
                                 //launch dialog to enter picker details
                                 dialog.dismiss()
-                                getRealtimePendingDispatch(loggedUser)
+                                getRealtimePendingDispatch()
 
                             }
                     }
@@ -1931,8 +1949,34 @@ class PendingDispatch : Fragment() {
 
     }
 
+    private fun getUser(userId: String): UserData? {
+        requireContext().showProgress()
+        val deferred = CoroutineScope(Dispatchers.IO).async {
+            try {
+                val snapshot = Common.userCollectionRef.document(userId).get().await()
+                if (snapshot.exists()) {
+                    return@async snapshot.toObject(UserData::class.java)
+                } else {
+                    return@async null
+                }
+            } catch (e: Exception) {
+                Handler(Looper.getMainLooper()).post {
+                    requireContext().toast(e.message.toString())
+                }
+                return@async null
+            }
+        }
+
+        val driverUser = runBlocking { deferred.await() }
+        hideProgress()
+
+        return driverUser
+    }
+
+
     override fun onDestroyView() {
         super.onDestroyView()
+        Log.d(TAG, "onDestroyView: ")
         _binding = null
     }
 

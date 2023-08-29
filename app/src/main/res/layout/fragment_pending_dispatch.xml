@@ -19,6 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:visibility="gone"
         android:backgroundTint="@color/primary"
         android:contentDescription="@string/add_dispatch"
         app:srcCompat="@drawable/ic_add"

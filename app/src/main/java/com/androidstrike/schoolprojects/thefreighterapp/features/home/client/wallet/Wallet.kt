@@ -57,6 +57,8 @@ class Wallet : Fragment() {
     private var _binding: FragmentWalletBinding? = null
     private val binding get() = _binding!!
 
+    private var hasWallet = false
+
     private val TAG = "Wallet"
 
 
@@ -84,7 +86,7 @@ class Wallet : Fragment() {
 
         with(binding) {
             walletLayout.visible(false)
-            noWalletLayout.visible(false)
+            //noWalletLayout.visible(true)
             val layoutManager = LinearLayoutManager(requireContext())
             rvWalletHistory.layoutManager = layoutManager
             rvWalletHistory.addItemDecoration(
@@ -104,16 +106,13 @@ class Wallet : Fragment() {
         requireContext().showProgress()
         CoroutineScope(Dispatchers.IO).launch {
 
-            walletCollectionRef.document(user!!.wallet)
+            walletCollectionRef//.document(user!!.wallet)
                 .get()
-                .addOnSuccessListener {
-                    if (it.exists()){
-                        hideProgress()
-                        binding.walletLayout.visible(true)
-                        fetchWalletDetails(it.id)
-                        Log.d(TAG, "getWalletDetails: ${it.id}")
-                    }else{
-                        hideProgress()
+                .addOnSuccessListener { wallets: QuerySnapshot ->
+                    hideProgress()
+                    if (wallets.isEmpty) {
+                        //no wallets
+                        //show to create new
                         binding.noWalletLayout.visible(true)
                         binding.createWallet.setOnClickListener {
                             val newWallet = WalletData(
@@ -128,23 +127,55 @@ class Wallet : Fragment() {
                             //create wallet
                             createWallet(newWallet)
                         }
+                    } else {
+                        //binding.noWalletLayout.visible(false)
 
+                        for (doc in wallets.documents) {
+                            val wallet = doc.toObject(WalletData::class.java)
+                            if (wallet?.walletOwner == auth.uid!!) {
+                                hasWallet = true
+
+                                binding.walletLayout.visible(true)
+                                Log.d(TAG, "getWalletDetails: $hasWallet")
+                                //binding.noWalletLayout.visible(false)
+                                fetchWalletDetails(walletId = wallet.walletId)
+                                return@addOnSuccessListener
+                            } else {
+                                //binding.noWalletLayout.visible(true)
+                                hasWallet = false
+                            }
+                        }
+                        Log.d(TAG, "getWalletDetails: $hasWallet")
+                        binding.noWalletLayout.visible(!hasWallet)
+                        binding.createWallet.setOnClickListener {
+                            val newWallet = WalletData(
+                                walletId = hashString(
+                                    "${auth.uid}${
+                                        System.currentTimeMillis().toString()
+                                    }"
+                                ),
+                                walletOwner = auth.uid!!,
+                                walletBalance = "0.0"
+                            )
+                            //create wallet
+                            createWallet(newWallet)
+                        }
                     }
-
                 }
         }
     }
 
     private fun fetchWalletDetails(walletId: String) {
-
-        //requireContext().showProgress()
+        //binding.noWalletLayout.visible(false)
+        requireContext().showProgress()
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val snapshot = Common.walletCollectionRef.document(walletId).get().await()
                 if (snapshot.exists()) {
                     hideProgress()
                     val walletInfo = snapshot.toObject(WalletData::class.java)
-                    withContext(Dispatchers.Main){
+                    withContext(Dispatchers.Main) {
+                        binding.walletLayout.visible(true)
                         binding.walletBalance.apply {
                             visible(true)
                             text = resources.getString(
@@ -300,15 +331,20 @@ class Wallet : Fragment() {
         requireContext().showProgress()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                walletCollectionRef.document(newWallet.walletId).set(newWallet).addOnSuccessListener {
-                    userCollectionRef.document(auth.uid!!).update("wallet", newWallet.walletId)
-                hideProgress()
-                binding.noWalletLayout.visible(false)
-                binding.walletLayout.visible(true)
-                fetchWalletDetails(newWallet.walletId)
-                }//.await()
+                walletCollectionRef.document(newWallet.walletId).set(newWallet)
+                    .addOnSuccessListener {
+                        userCollectionRef.document(auth.uid!!).update("wallet", newWallet.walletId)
+                            .addOnSuccessListener {
+                                hideProgress()
+                                binding.noWalletLayout.visible(false)
+                                //binding.walletLayout.visible(true)
+                                fetchWalletDetails(newWallet.walletId)
+                            }
+
+                    }//.await()
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
+                    hideProgress()
                     activity?.toast(e.message.toString())
                 }
             }
@@ -369,6 +405,6 @@ class Wallet : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding
+        _binding = null
     }
 }

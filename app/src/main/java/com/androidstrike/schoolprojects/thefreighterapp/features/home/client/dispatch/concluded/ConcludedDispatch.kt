@@ -20,6 +20,7 @@ import com.androidstrike.schoolprojects.thefreighterapp.databinding.FragmentConc
 import com.androidstrike.schoolprojects.thefreighterapp.models.Dispatch
 import com.androidstrike.schoolprojects.thefreighterapp.models.UserData
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common
+import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.auth
 import com.androidstrike.schoolprojects.thefreighterapp.utils.enable
 import com.androidstrike.schoolprojects.thefreighterapp.utils.getDate
 import com.androidstrike.schoolprojects.thefreighterapp.utils.hideProgress
@@ -67,8 +68,7 @@ class ConcludedDispatch : Fragment() {
         driverRole = resources.getString(R.string.driver)
         weigherRole = resources.getString(R.string.weigher)
 
-        getUser()
-
+        getRealtimeConcludedDispatch()
         with(binding) {
             val layoutManager = LinearLayoutManager(requireContext())
             rvConcludedDispatchList.layoutManager = layoutManager
@@ -81,7 +81,7 @@ class ConcludedDispatch : Fragment() {
         }
     }
 
-    private fun getUser() {
+    private fun getUsern() {
         var loggedUser = UserData()
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -95,14 +95,15 @@ class ConcludedDispatch : Fragment() {
                     if (value != null && value.exists()) {
                         loggedUser = value.toObject(UserData::class.java)!!
 
-                        getRealtimeConcludedDispatch(loggedUser)
+                        getRealtimeConcludedDispatch()
                     }
                 }
         }
     }
 
-    private fun getRealtimeConcludedDispatch(loggedUser: UserData) {
+    private fun getRealtimeConcludedDispatch() {
 
+        val loggedUser = getUser(auth.uid!!)!!
         when (loggedUser.role) {
             clientRole -> {
                 concludedDispatches =
@@ -167,7 +168,7 @@ class ConcludedDispatch : Fragment() {
                     holder.itemView.setOnClickListener {
                         //launch a new screen
 
-                        handleDispatchesStatuses(model, loggedUser)
+                        handleDispatchesStatuses(model)
                     }
                 }
             }
@@ -181,7 +182,7 @@ class ConcludedDispatch : Fragment() {
 
     }
 
-    private fun handleDispatchesStatuses(dispatch: Dispatch, loggedUser: UserData) {
+    private fun handleDispatchesStatuses(dispatch: Dispatch) {
 
         val builder =
             layoutInflater.inflate(R.layout.concluded_dispatch_details_dialog, null)
@@ -229,6 +230,8 @@ class ConcludedDispatch : Fragment() {
             .setView(builder)
             .setCancelable(false)
             .create()
+
+        val loggedUser = getUser(auth.uid!!)!!
 
         var customerRating = 0.0F
 
@@ -366,7 +369,7 @@ class ConcludedDispatch : Fragment() {
                         hideProgress()
                         //launch dialog to enter picker details
                         dialog.dismiss()
-                        getRealtimeConcludedDispatch(loggedUser)
+                        getRealtimeConcludedDispatch()
 
                     }
             }
@@ -414,6 +417,33 @@ class ConcludedDispatch : Fragment() {
 
         return driverUser
     }
+
+
+    private fun getUser(userId: String): UserData? {
+        requireContext().showProgress()
+        val deferred = CoroutineScope(Dispatchers.IO).async {
+            try {
+                val snapshot = Common.userCollectionRef.document(userId).get().await()
+                if (snapshot.exists()) {
+                    return@async snapshot.toObject(UserData::class.java)
+                } else {
+                    return@async null
+                }
+            } catch (e: Exception) {
+                Handler(Looper.getMainLooper()).post {
+                    requireContext().toast(e.message.toString())
+                }
+                return@async null
+            }
+        }
+
+        val driverUser = runBlocking { deferred.await() }
+        hideProgress()
+
+        return driverUser
+    }
+
+
 
 
     override fun onDestroyView() {
