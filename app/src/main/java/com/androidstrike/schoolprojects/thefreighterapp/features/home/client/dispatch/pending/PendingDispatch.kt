@@ -1632,7 +1632,7 @@ class PendingDispatch : Fragment() {
             builder.findViewById<TextView>(R.id.client_accept_price_dialog_submit_text)
 
         tvDispatchAcceptPriceQuestion.text =
-            resources.getString(R.string.accept_price_question, driver)
+            resources.getString(R.string.accept_price_question, driver.driverCharge)
 
         val dialog = AlertDialog.Builder(requireContext())
             .setView(builder)

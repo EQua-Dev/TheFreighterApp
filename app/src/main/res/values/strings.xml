@@ -134,7 +134,7 @@
     <string name="money_text">€%s</string>
     <string name="dispatch_detail_money_text">%s (%s)</string>
     <string name="tv_accept_price">Accept Price</string>
-    <string name="accept_price_question">Do you accept the driver stated price (%s)?</string>
+    <string name="accept_price_question">Do you accept the driver stated price (€%s)?</string>
     <string name="client_negotiate_text">Negotiate</string>
     <string name="tv_enter_picker_details">Add Picker Details</string>
     <string name="enter_picker_name">Enter picker name</string>
