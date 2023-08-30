@@ -167,14 +167,13 @@ class Wallet : Fragment() {
 
     private fun fetchWalletDetails(walletId: String) {
         //binding.noWalletLayout.visible(false)
-        requireContext().showProgress()
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val snapshot = Common.walletCollectionRef.document(walletId).get().await()
                 if (snapshot.exists()) {
-                    hideProgress()
                     val walletInfo = snapshot.toObject(WalletData::class.java)
                     withContext(Dispatchers.Main) {
+                        hideProgress()
                         binding.walletLayout.visible(true)
                         binding.walletBalance.apply {
                             visible(true)
@@ -195,6 +194,7 @@ class Wallet : Fragment() {
 
                 }
             } catch (e: Exception) {
+                hideProgress()
                 requireContext().toast(e.message.toString())
             }
         }
@@ -233,6 +233,7 @@ class Wallet : Fragment() {
             btnFundWallet.apply {
                 enable(fundAmount.isNotEmpty())
                 setOnClickListener {
+                    requireContext().showProgress()
                     val newBalance =
                         getWalletInfo(walletId)!!.walletBalance.toDouble() + fundAmount.toDouble()
                     CoroutineScope(Dispatchers.IO).launch {
