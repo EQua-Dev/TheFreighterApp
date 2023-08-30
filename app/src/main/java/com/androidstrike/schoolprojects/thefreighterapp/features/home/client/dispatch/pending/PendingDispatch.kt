@@ -146,37 +146,37 @@ class PendingDispatch : Fragment() {
 
     }
 
-    private fun getUsern(request: String) {
-        var loggedUser = UserData()
-        requireContext().showProgress()
-
-        CoroutineScope(Dispatchers.IO).launch {
-            Common.userCollectionRef.document(Common.auth.uid.toString())
-//            Common.userCollectionRef.document("ElE9dfN1rXVaJ0MD8IsJv046BnV2")
-                .addSnapshotListener { value, error ->
-                    if (error != null) {
-                        hideProgress()
-                        requireContext().toast(error.message.toString())
-                        return@addSnapshotListener
-                    }
-                    if (value != null && value.exists()) {
-                        loggedUser = value.toObject(UserData::class.java)!!
-                        if (loggedUser.role == resources.getString(R.string.client))
-                            Log.d(TAG, "getUser: ${loggedUser.role}")
-                            hideProgress()
-
-                        binding.fabAddDispatch.visible(true)
-
-                        if (request == resources.getString(R.string.add_dispatch)) {
-
-                        } else {
-                            hideProgress()
-                            getRealtimePendingDispatch()
-                        }
-                    }
-                }
-        }
-    }
+//    private fun getUsern(request: String) {
+//        var loggedUser = UserData()
+//        requireContext().showProgress()
+//
+//        CoroutineScope(Dispatchers.IO).launch {
+//            Common.userCollectionRef.document(Common.auth.uid.toString())
+////            Common.userCollectionRef.document("ElE9dfN1rXVaJ0MD8IsJv046BnV2")
+//                .addSnapshotListener { value, error ->
+//                    if (error != null) {
+//                        hideProgress()
+//                        requireContext().toast(error.message.toString())
+//                        return@addSnapshotListener
+//                    }
+//                    if (value != null && value.exists()) {
+//                        loggedUser = value.toObject(UserData::class.java)!!
+//                        if (loggedUser.role == resources.getString(R.string.client))
+//                            Log.d(TAG, "getUser: ${loggedUser.role}")
+//                            hideProgress()
+//
+//                        binding.fabAddDispatch.visible(true)
+//
+//                        if (request == resources.getString(R.string.add_dispatch)) {
+//
+//                        } else {
+//                            hideProgress()
+//                            getRealtimePendingDispatch()
+//                        }
+//                    }
+//                }
+//        }
+//    }
 
     private fun getRealtimePendingDispatch() {
 
@@ -646,6 +646,7 @@ class PendingDispatch : Fragment() {
                     //change the status to in transit
                     //set pick up date
                     //update dispatch
+                    requireContext().showProgress()
                     CoroutineScope(Dispatchers.IO).launch {
                         val dispatchCollectionRef =
                             dispatchCollectionRef.document(dispatch.dispatchId)
@@ -801,12 +802,10 @@ class PendingDispatch : Fragment() {
     }
 
     private fun addDriverFunds(amount: Double, client: String, driver: String, reason: String) {
-        requireContext().showProgress()
         CoroutineScope(Dispatchers.IO).launch {
             walletCollectionRef
                 .get()
                 .addOnSuccessListener { querySnapshot: QuerySnapshot ->
-
                     for (document in querySnapshot.documents) {
                         val item = document.toObject(WalletData::class.java)
                         if (item?.walletOwner == client) {
