@@ -5,17 +5,27 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.addTextChangedListener
 import com.androidstrike.schoolprojects.thefreighterapp.R
 import com.androidstrike.schoolprojects.thefreighterapp.databinding.FragmentProfileBinding
 import com.androidstrike.schoolprojects.thefreighterapp.models.UserData
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.auth
+import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.userCollectionRef
+import com.androidstrike.schoolprojects.thefreighterapp.utils.enable
 import com.androidstrike.schoolprojects.thefreighterapp.utils.getDate
+import com.androidstrike.schoolprojects.thefreighterapp.utils.hideProgress
+import com.androidstrike.schoolprojects.thefreighterapp.utils.showProgress
 import com.androidstrike.schoolprojects.thefreighterapp.utils.toast
 import com.androidstrike.schoolprojects.thefreighterapp.utils.visible
+import com.google.android.material.textfield.TextInputEditText
+import com.hbb20.CountryCodePicker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 
@@ -45,31 +55,96 @@ class Profile : Fragment() {
         weigherRole = resources.getString(R.string.weigher)
 
 
+        loadView()
+
+    }
+
+    private fun launchEditPhoneNumberDialog() {
+
+        val builder =
+            layoutInflater.inflate(R.layout.edit_phone_number_dialog, null)
+
+        val updatePhoneCountryCodePicker =
+            builder.findViewById<CountryCodePicker>(R.id.update_phone_number_country_code_picker)
+        val updatePhoneEditText =
+            builder.findViewById<TextInputEditText>(R.id.update_customer_phone)
+        val cancelUpdateBtn = builder.findViewById<Button>(R.id.btn_cancel)
+        val updateBtn = builder.findViewById<Button>(R.id.btn_update)
+
+
+        val dialog = AlertDialog.Builder(requireContext())
+            .setView(builder)
+            .setCancelable(false)
+            .create()
+
+        var updatedCountryCode = updatePhoneCountryCodePicker.defaultCountryCodeWithPlus
+
+
+
+        updatePhoneCountryCodePicker.setOnCountryChangeListener {
+            updatedCountryCode = updatePhoneCountryCodePicker.selectedCountryCodeWithPlus
+            // Handle selected country code and name
+            updatePhoneCountryCodePicker.setNumberAutoFormattingEnabled(true)
+        }
+        updatePhoneEditText.addTextChangedListener { phoneNumber ->
+            val newPhoneNumber = phoneNumber.toString().trim()
+            updateBtn.apply {
+                enable(newPhoneNumber.isNotEmpty())
+                setOnClickListener {
+                    val userUpdatedPhoneNumber = "$updatedCountryCode$newPhoneNumber"
+                    requireContext().showProgress()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        userCollectionRef.document(auth.uid!!)
+                            .update("phoneNumber", userUpdatedPhoneNumber).addOnSuccessListener {
+                                hideProgress()
+                            requireContext().toast("Phone number updated")
+                            loadView()
+                            dialog.dismiss()
+                        }.addOnFailureListener { e ->
+                                hideProgress()
+                            requireContext().toast(e.message.toString())
+                        }
+                    }
+                }
+            }
+        }
+
+        cancelUpdateBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
+    private fun loadView() {
         val user = getUser(auth.uid!!)
 
-        with(binding){
-            when(user!!.role){
+        with(binding) {
+            when (user!!.role) {
                 clientRole -> {
 
-                vehiclePlateNumberTitle.visible(false)
-                profileUserVehiclePlateNumber.visible(false)
-                driverLicenseNumberTitle.visible(false)
-                profileUserDriverLicenseNumber.visible(false)
-                layoutCoverageLocation1.visible(false)
-                layoutCoverageLocation2.visible(false)
-                layoutContactPersonName.visible(false)
-                layoutContactPersonPhoneNumber.visible(false)
-                layoutContactPersonAddress.visible(false)
-                layoutWeighingCost.visible(false)
+                    vehiclePlateNumberTitle.visible(false)
+                    profileUserVehiclePlateNumber.visible(false)
+                    driverLicenseNumberTitle.visible(false)
+                    profileUserDriverLicenseNumber.visible(false)
+                    layoutCoverageLocation1.visible(false)
+                    layoutCoverageLocation2.visible(false)
+                    layoutContactPersonName.visible(false)
+                    layoutContactPersonPhoneNumber.visible(false)
+                    layoutContactPersonAddress.visible(false)
+                    layoutWeighingCost.visible(false)
 
-                profileIconText.text = user.fullName.substring(0,1)
-                profileNameText.text = user.fullName
-                profileDateJoinedText.text = resources.getString(R.string.date_joined, getDate(user.dateJoined.toLong(), "dd, MMM, yyyy"))
-                profileUserEmail.text = user.email
-                profileUserPhoneNumber.text = user.phoneNumber
-                profileUserDateOfBirth.text = user.dateOfBirth
-                profileUserCountryOfResidence.text = user.countryOfResidence
+                    profileIconText.text = user.fullName.substring(0, 1)
+                    profileNameText.text = user.fullName
+                    profileDateJoinedText.text = resources.getString(
+                        R.string.date_joined,
+                        getDate(user.dateJoined.toLong(), "dd, MMM, yyyy")
+                    )
+                    profileUserEmail.text = user.email
+                    profileUserPhoneNumber.text = user.phoneNumber
+                    profileUserDateOfBirth.text = user.dateOfBirth
+                    profileUserCountryOfResidence.text = user.countryOfResidence
                 }
+
                 weigherRole -> {
                     vehiclePlateNumberTitle.visible(false)
                     profileUserVehiclePlateNumber.visible(false)
@@ -82,29 +157,43 @@ class Profile : Fragment() {
                     layoutContactPersonAddress.visible(false)
 
 
-                    profileIconText.text = user.fullName.substring(0,1)
+                    profileIconText.text = user.fullName.substring(0, 1)
                     profileNameText.text = user.fullName
-                    profileDateJoinedText.text = resources.getString(R.string.date_joined, getDate(user.dateJoined.toLong(), "dd, MMM, yyyy"))
+                    profileDateJoinedText.text = resources.getString(
+                        R.string.date_joined,
+                        getDate(user.dateJoined.toLong(), "dd, MMM, yyyy")
+                    )
                     profileUserEmail.text = user.email
                     profileUserPhoneNumber.text = user.phoneNumber
                     profileUserDateOfBirth.text = user.dateOfBirth
                     profileUserCountryOfResidence.text = user.countryOfResidence
-                    profileUserWeighingCost.text = resources.getString(R.string.money_text, user.weigherCost)
+                    profileUserWeighingCost.text =
+                        resources.getString(R.string.money_text, user.weigherCost)
                 }
+
                 driverRole -> {
                     profileUserVehiclePlateNumber.text = user.vehiclePlateNumber
                     profileUserDriverLicenseNumber.text = user.driverLicenseNumber
                     profileUserCoverageCountry1.text = user.coverageLocation1
                     profileUserCoverageCountry2.text = user.coverageLocation2
                     profileUserDriverContactPersonName.text = user.driverContactPersonName
-                    profileUserDriverContactPersonPhoneNumber.text = user.driverContactPersonPhoneNumber
-                    profileUserDriverContactPersonAddress.text = resources.getString(R.string.dispatch_detail_address, user.driverContactPersonAddress, user.driverContactPersonCity, user.driverContactPersonCountry)
+                    profileUserDriverContactPersonPhoneNumber.text =
+                        user.driverContactPersonPhoneNumber
+                    profileUserDriverContactPersonAddress.text = resources.getString(
+                        R.string.dispatch_detail_address,
+                        user.driverContactPersonAddress,
+                        user.driverContactPersonCity,
+                        user.driverContactPersonCountry
+                    )
 
                     layoutWeighingCost.visible(false)
 
-                    profileIconText.text = user.fullName.substring(0,1)
+                    profileIconText.text = user.fullName.substring(0, 1)
                     profileNameText.text = user.fullName
-                    profileDateJoinedText.text = resources.getString(R.string.date_joined, getDate(user.dateJoined.toLong(), "dd, MMM, yyyy"))
+                    profileDateJoinedText.text = resources.getString(
+                        R.string.date_joined,
+                        getDate(user.dateJoined.toLong(), "dd, MMM, yyyy")
+                    )
                     profileUserEmail.text = user.email
                     profileUserPhoneNumber.text = user.phoneNumber
                     profileUserDateOfBirth.text = user.dateOfBirth
@@ -112,58 +201,11 @@ class Profile : Fragment() {
                 }
             }
 
+            tvProfileEditPhoneNumber.visible(true)
+            tvProfileEditPhoneNumber.setOnClickListener {
+                launchEditPhoneNumberDialog()
+            }
         }
-//        vehicle_plate_number_title
-//        driver_license_number_title
-//        layout_coverage_location1
-//        layout_coverage_location2
-//        layout_contact_person_name
-//        layout_contact_person_phone_number
-//        layout_contact_person_address
-//        layout_weighing_cost
-//        profile_icon_text
-//        profile_name_text
-//        profile_date_joined_text
-//        profile_user_email
-//        profile_user_phone_number
-//        tv_profile_edit_phone_number
-//        profile_user_date_of_birth
-//        profile_user_country_of_residence
-//        tv_profile_edit_country_of_residence
-//        profile_user_vehicle_plate_number
-//        profile_user_driver_license_number
-//        profile_user_coverage_country1
-//        tv_profile_edit_coverage_country1
-//        profile_user_coverage_country2
-//        tv_profile_edit_coverage_country2
-//        profile_user_driver_contact_person_name
-//        tv_profile_edit_driver_contact_person_name
-//        profile_user_driver_contact_person_phone_number
-//        tv_profile_edit_driver_contact_person_phone_number
-//        profile_user_driver_contact_person_address
-//        tv_profile_edit_driver_contact_person_address
-//        profile_user_weighing_cost
-//        tv_profile_edit_weighing
-//
-//
-//        fullName
-//        email
-//        phoneNumber
-//        dateOfBirth
-//        countryOfResidence
-//        dateJoined
-//        role
-//        vehiclePlateNumber
-//        driverLicenseNumber
-//        coverageLocation1
-//        coverageLocation2
-//        driverContactPersonName
-//        driverContactPersonPhoneNumber
-//        driverContactPersonAddress
-//        driverContactPersonCity
-//        driverContactPersonCountry
-//        weigherCost
-
 
 
     }

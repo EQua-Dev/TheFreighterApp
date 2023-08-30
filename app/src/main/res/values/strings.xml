@@ -186,6 +186,9 @@
     <string name="driver_contact_person_phone_title">Contact Person Phone Number</string>
     <string name="driver_contact_person_address_title">Contact Person Address</string>
     <string name="weighing_cost_title">Weighing Cost</string>
+    <string name="update_phone">Enter new phone number</string>
+    <string name="update">Update</string>
+    <string name="update_phone_number">Update Phone Number</string>
 
     <string-array name="dispatch_tab_titles">
         <item>Pending</item>
