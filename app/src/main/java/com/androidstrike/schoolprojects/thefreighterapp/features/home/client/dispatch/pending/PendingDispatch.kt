@@ -122,17 +122,20 @@ class PendingDispatch : Fragment() {
         getRealtimePendingDispatch()
 
         with(binding) {
-            fabAddDispatch.setOnClickListener {
-                parentFragment?.let { parentFragment ->
-                    val navController = parentFragment.findNavController()
-                    val navToNewDispatch =
-                        DispatchScreenLandingDirections.actionPendingDispatchToCreateNewDispatch(
-                            getUser(auth.uid!!)!!,
-                            ""
-                        )
-                    navController.navigate(navToNewDispatch)
+            fabAddDispatch.apply {
+                visible(getUser(auth.uid!!)!!.role == clientRole)
+                setOnClickListener {
+                    parentFragment?.let { parentFragment ->
+                        val navController = parentFragment.findNavController()
+                        val navToNewDispatch =
+                            DispatchScreenLandingDirections.actionPendingDispatchToCreateNewDispatch(
+                                getUser(auth.uid!!)!!,
+                                ""
+                            )
+                        navController.navigate(navToNewDispatch)
+                    }
+                    //getUser(resources.getString(R.string.add_dispatch))
                 }
-                //getUser(resources.getString(R.string.add_dispatch))
             }
             val layoutManager = LinearLayoutManager(requireContext())
             rvOngoingDispatchList.layoutManager = layoutManager
