@@ -401,10 +401,8 @@ class PendingDispatch : Fragment() {
                                                 interestedDriversMutableMap =
                                                     model.interestedDrivers.toMutableMap()
                                                 interestedDriversMutableMap[loggedUser.userId] =
-                                                    resources.getString(
-                                                        R.string.money_text,
                                                         driverCharge
-                                                    )
+
 
                                                 CoroutineScope(Dispatchers.IO).launch {
                                                     val dispatchCollectionRef =
@@ -1192,10 +1190,9 @@ class PendingDispatch : Fragment() {
                                                     .toString(),
                                                 "lastUpdater" to loggedUser.userId,
                                                 "negotiationRound" to resources.getString(R.string.negotiation_two),
-                                                "negotiationPrice2" to resources.getString(
-                                                    R.string.money_text,
+                                                "negotiationPrice2" to
                                                     negotiationPrice2
-                                                ),
+
                                             )
 
                                             dispatchCollectionRef.update(updates)
@@ -1253,10 +1250,12 @@ class PendingDispatch : Fragment() {
                 //means driver has given counter price
                 etClientCounterPrice1.visible(false)
                 negotiation1Price.visible(true)
-                negotiation1Price.text = model.negotiationPrice1
+                negotiation1Price.text = resources.getString(
+                    R.string.money_text,model.negotiationPrice1)
                 etClientCounterPrice2.visible(false)
                 negotiation2Price.visible(true)
-                negotiation2Price.text = model.negotiationPrice2
+                negotiation2Price.text = resources.getString(
+                    R.string.money_text,model.negotiationPrice2)
                 if (loggedUser.role == resources.getString(R.string.driver)) {
                     cbClientNegotiate.enable(false)
                     btnSubmitNegotiation.apply {
@@ -1285,10 +1284,9 @@ class PendingDispatch : Fragment() {
                                                     .toString(),
                                                 "lastUpdater" to loggedUser.userId,
                                                 "negotiationRound" to resources.getString(R.string.negotiation_three),
-                                                "negotiationPrice3" to resources.getString(
-                                                    R.string.money_text,
+                                                "negotiationPrice3" to
                                                     negotiationPrice3
-                                                ),
+
                                             )
 
                                             dispatchCollectionRef.update(updates)
@@ -1340,13 +1338,16 @@ class PendingDispatch : Fragment() {
                 //driver either accept of cancels
                 etClientCounterPrice1.visible(false)
                 negotiation1Price.visible(true)
-                negotiation1Price.text = model.negotiationPrice1
+                negotiation1Price.text = resources.getString(
+                    R.string.money_text,model.negotiationPrice1)
                 etClientCounterPrice2.visible(false)
                 negotiation2Price.visible(true)
-                negotiation2Price.text = model.negotiationPrice2
+                negotiation2Price.text = resources.getString(
+                    R.string.money_text,model.negotiationPrice2)
                 etClientCounterPrice3.visible(false)
                 negotiation3Price.visible(true)
-                negotiation3Price.text = model.negotiationPrice3
+                negotiation3Price.text = resources.getString(
+                    R.string.money_text,model.negotiationPrice3)
                 if (loggedUser.role == resources.getString(R.string.driver)) {
                     tvNegotiationInfo.apply {
                         setTextColor(resources.getColor(R.color.reject))
@@ -1661,10 +1662,9 @@ class PendingDispatch : Fragment() {
                                     "statusChangeTime" to System.currentTimeMillis().toString(),
                                     "lastUpdater" to auth.uid!!,
                                     "negotiationRound" to resources.getString(R.string.negotiation_one),
-                                    "negotiationPrice1" to resources.getString(
-                                        R.string.money_text,
+                                    "negotiationPrice1" to
                                         counterCharge
-                                    ),
+
                                 )
 
                                 dispatchCollectionRef.update(updates)
