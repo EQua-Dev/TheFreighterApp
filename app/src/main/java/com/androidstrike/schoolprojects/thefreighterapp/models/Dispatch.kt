@@ -35,5 +35,5 @@ data class Dispatch(
     var datePickedUp: String = "",
     val dateDelivered: String = "",
     var dispatchId: String = "",
-    var rating: String = ""
+    var rating: String = "0"
 )

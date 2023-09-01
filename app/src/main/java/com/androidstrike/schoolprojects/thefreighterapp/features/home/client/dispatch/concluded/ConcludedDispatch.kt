@@ -163,7 +163,11 @@ class ConcludedDispatch : Fragment() {
                             getDispatchDriver(model.client)!!.fullName
                         }
                     val decimalFormat = DecimalFormat("#.#")
-                    val formattedNumber = decimalFormat.format(model.rating.toFloat())
+                    val formattedNumber = if (model.rating.isNotEmpty())
+                        decimalFormat.format(model.rating.toFloat())
+                    else
+                        decimalFormat.format(0.0)
+
                     holder.concludedDeliveredDispatchRating.text =
                         formattedNumber.ifEmpty { resources.getString(R.string.not_rated) }
 
@@ -445,8 +449,6 @@ class ConcludedDispatch : Fragment() {
 
         return driverUser
     }
-
-
 
 
     override fun onDestroyView() {
