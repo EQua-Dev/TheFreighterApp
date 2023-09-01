@@ -20,6 +20,7 @@ import com.androidstrike.schoolprojects.thefreighterapp.databinding.FragmentConc
 import com.androidstrike.schoolprojects.thefreighterapp.models.Dispatch
 import com.androidstrike.schoolprojects.thefreighterapp.models.UserData
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common
+import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.DATE_FORMAT
 import com.androidstrike.schoolprojects.thefreighterapp.utils.Common.auth
 import com.androidstrike.schoolprojects.thefreighterapp.utils.enable
 import com.androidstrike.schoolprojects.thefreighterapp.utils.getDate
@@ -145,7 +146,9 @@ class ConcludedDispatch : Fragment() {
                 ) {
                     //val timeToDeliver = model.supposedTime
                     holder.concludedDeliveredDispatchStatus.text = model.status
-                    holder.concludedDispatchDateDelivered.text =
+                    holder.concludedDispatchDateDelivered.text = if (loggedUser.role == weigherRole)
+                        getDate(model.dateWeighed.toLong(), DATE_FORMAT)
+                    else
                         getDate(model.dateDelivered.toLong(), Common.DATE_FORMAT)
                     holder.concludedDeliveredDispatchDestination.text = resources.getString(
                         R.string.tv_dispatch_destination,
