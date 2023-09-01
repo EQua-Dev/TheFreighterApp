@@ -225,6 +225,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="@dimen/padding_maxi"
+                android:textAlignment="center"
                 tools:text="@tools:sample/cities"
                 android:textColor="@color/primary"
                 android:textSize="@dimen/text_xxs"

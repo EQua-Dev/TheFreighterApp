@@ -754,7 +754,7 @@ class PendingDispatch : Fragment() {
             makeCall(dispatch.pickerNumber)
         }
         dispatchDetailRequestTracking.apply {
-            visible(loggedUser.role == clientRole && dispatch.status == STATUS_IN_TRANSIT)
+            visible(loggedUser.role == clientRole && dispatch.status == STATUS_IN_TRANSIT && !dispatch.userLocationRequest)
             enable(!dispatch.userLocationRequest)
             setOnClickListener {
                 //update the dispatch userRequestLocation to true, when the driver updates, it changes back to false
@@ -779,11 +779,12 @@ class PendingDispatch : Fragment() {
         dispatchDetailDriverLocation.apply {
             //if a driver is logged in, the text is "update location"
             if (status == STATUS_IN_TRANSIT) {
-                visible(true)
+
                 if (loggedUser.role == driverRole) {
-                    enable(
-                        dispatch.userLocationRequest
-                    )
+                    visible(dispatch.userLocationRequest)
+//                    enable(
+//                        dispatch.userLocationRequest
+//                    )
                     text = resources.getString(R.string.update_location)
                     setOnClickListener {
                         //get the driver's current location and populate the database
@@ -1923,6 +1924,7 @@ class PendingDispatch : Fragment() {
         } else {
             // Handle the case where Google Maps is not installed on the device
             // For example, show an error message or use a different map provider.
+            requireContext().toast("Install Google Maps on you device")
         }
     }
 
