@@ -149,38 +149,6 @@ class PendingDispatch : Fragment() {
 
     }
 
-//    private fun getUsern(request: String) {
-//        var loggedUser = UserData()
-//        requireContext().showProgress()
-//
-//        CoroutineScope(Dispatchers.IO).launch {
-//            Common.userCollectionRef.document(Common.auth.uid.toString())
-////            Common.userCollectionRef.document("ElE9dfN1rXVaJ0MD8IsJv046BnV2")
-//                .addSnapshotListener { value, error ->
-//                    if (error != null) {
-//                        hideProgress()
-//                        requireContext().toast(error.message.toString())
-//                        return@addSnapshotListener
-//                    }
-//                    if (value != null && value.exists()) {
-//                        loggedUser = value.toObject(UserData::class.java)!!
-//                        if (loggedUser.role == resources.getString(R.string.client))
-//                            Log.d(TAG, "getUser: ${loggedUser.role}")
-//                            hideProgress()
-//
-//                        binding.fabAddDispatch.visible(true)
-//
-//                        if (request == resources.getString(R.string.add_dispatch)) {
-//
-//                        } else {
-//                            hideProgress()
-//                            getRealtimePendingDispatch()
-//                        }
-//                    }
-//                }
-//        }
-//    }
-
     private fun getRealtimePendingDispatch() {
 
         val loggedUser = getUser(auth.uid!!)!!
@@ -404,7 +372,7 @@ class PendingDispatch : Fragment() {
                                                 interestedDriversMutableMap =
                                                     model.interestedDrivers.toMutableMap()
                                                 interestedDriversMutableMap[loggedUser.userId] =
-                                                        driverCharge
+                                                    driverCharge
 
 
                                                 CoroutineScope(Dispatchers.IO).launch {
@@ -719,16 +687,23 @@ class PendingDispatch : Fragment() {
                             "statusChangeTime" to System.currentTimeMillis()
                                 .toString(),
                             "status" to STATUS_DELIVERED,
+                            "rating" to "0",
                             "dateDelivered" to System.currentTimeMillis().toString(),
                         )
 
                         dispatchCollectionRef.update(updates)
                             .addOnSuccessListener {
-                                hideProgress()
-                                confirmDialog.dismiss()
-                                requireContext().toast(resources.getString(R.string.update_success))
-                                dialog.dismiss()
-                                getRealtimePendingDispatch()
+
+                                //remove dispatch from driver
+                                userCollectionRef.document(dispatch.dispatchId)
+                                    .update("dispatch", "").addOnSuccessListener {
+
+                                    hideProgress()
+                                    confirmDialog.dismiss()
+                                    requireContext().toast(resources.getString(R.string.update_success))
+                                    dialog.dismiss()
+                                    getRealtimePendingDispatch()
+                                }
 
                             }
 
@@ -1013,59 +988,49 @@ class PendingDispatch : Fragment() {
                                         walletCollectionRef
                                             .get()
                                             .addOnSuccessListener { weigherWalletSnapshot: QuerySnapshot ->
-                                                for (wallet in weigherWalletSnapshot.documents) {
-                                                    val weigherWallet =
-                                                        wallet.toObject(WalletData::class.java)
-                                                    if (weigherWallet?.walletOwner == weigher) {
-                                                        //add to weigher's wallet balance
-                                                        val newBalance =
-                                                            weigherWallet.walletBalance.toDouble() + getDispatchDriver(
-                                                                weigher
-                                                            )?.weigherCost?.toDouble()!!
-                                                        Log.d(TAG, "addWeighingFunds: $newBalance")
-                                                        Log.d(
-                                                            TAG,
-                                                            "addWeighingFunds: ${weigherWallet.walletId}"
+                                                val weigherInfo = getDispatchDriver(weigher)!!
+                                                val weigherWallet =
+                                                    getDispatchDriver(weigher)!!.wallet
+                                                val weigherWalletBalance =
+                                                    getWalletInfo(weigher)!!.walletBalance
+                                                val newWeigherBalance =
+                                                    weigherWalletBalance.toDouble()
+                                                        .plus(weigherInfo.weigherCost.toDouble())
+                                                walletCollectionRef.document(weigherWallet).update(
+                                                    "walletBalance",
+                                                    newWeigherBalance.toString()
+                                                ).addOnSuccessListener {
+                                                    val walletHistoryReference =
+                                                        walletCollectionRef.document(
+                                                            weigherWallet
+                                                        ).collection(
+                                                            Common.WALLET_HISTORY_REF
                                                         )
-                                                        walletCollectionRef.document(weigherWallet.walletId)
-                                                            .update(
-                                                                "walletBalance",
-                                                                newBalance.toString()
-                                                            ).addOnSuccessListener {
-                                                            CoroutineScope(Dispatchers.IO).launch {
-                                                                val walletHistoryReference =
-                                                                    walletCollectionRef.document(
-                                                                        weigherWallet.walletId
-                                                                    ).collection(
-                                                                        Common.WALLET_HISTORY_REF
-                                                                    )
-                                                                val walletTransaction =
-                                                                    WalletHistory(
-                                                                        transactionDate = getDate(
-                                                                            System.currentTimeMillis(),
-                                                                            Common.DATE_FORMAT_LONG
-                                                                        ),
-                                                                        transactionType = "CR",
-                                                                        transactionAmount = resources.getString(
-                                                                            R.string.money_text,
-                                                                            getDispatchDriver(
-                                                                                weigher
-                                                                            )?.weigherCost
-                                                                        ),
-                                                                        transactionReason = Common.REASON_WEIGH_PAY
-                                                                    )
+                                                    val walletTransaction =
+                                                        WalletHistory(
+                                                            transactionDate = getDate(
+                                                                System.currentTimeMillis(),
+                                                                Common.DATE_FORMAT_LONG
+                                                            ),
+                                                            transactionType = "CR",
+                                                            transactionAmount = resources.getString(
+                                                                R.string.money_text,
+                                                                getDispatchDriver(
+                                                                    weigher
+                                                                )?.weigherCost
+                                                            ),
+                                                            transactionReason = Common.REASON_WEIGH_PAY
+                                                        )
 
-                                                                walletHistoryReference.document(
-                                                                    System.currentTimeMillis()
-                                                                        .toString()
-                                                                ).set(walletTransaction).await()
-                                                            }
-                                                        }
+                                                    walletHistoryReference.document(
+                                                        System.currentTimeMillis()
+                                                            .toString()
+                                                    ).set(walletTransaction).addOnCompleteListener {
+                                                        hideProgress()
+
                                                     }
                                                 }
-
                                             }
-                                        hideProgress()
                                     }
                             }
                         }
@@ -1198,7 +1163,7 @@ class PendingDispatch : Fragment() {
                                                 "lastUpdater" to loggedUser.userId,
                                                 "negotiationRound" to resources.getString(R.string.negotiation_two),
                                                 "negotiationPrice2" to
-                                                    negotiationPrice2
+                                                        negotiationPrice2
 
                                             )
 
@@ -1258,11 +1223,13 @@ class PendingDispatch : Fragment() {
                 etClientCounterPrice1.visible(false)
                 negotiation1Price.visible(true)
                 negotiation1Price.text = resources.getString(
-                    R.string.money_text,model.negotiationPrice1)
+                    R.string.money_text, model.negotiationPrice1
+                )
                 etClientCounterPrice2.visible(false)
                 negotiation2Price.visible(true)
                 negotiation2Price.text = resources.getString(
-                    R.string.money_text,model.negotiationPrice2)
+                    R.string.money_text, model.negotiationPrice2
+                )
                 if (loggedUser.role == resources.getString(R.string.driver)) {
                     cbClientNegotiate.enable(false)
                     btnSubmitNegotiation.apply {
@@ -1292,7 +1259,7 @@ class PendingDispatch : Fragment() {
                                                 "lastUpdater" to loggedUser.userId,
                                                 "negotiationRound" to resources.getString(R.string.negotiation_three),
                                                 "negotiationPrice3" to
-                                                    negotiationPrice3
+                                                        negotiationPrice3
 
                                             )
 
@@ -1328,7 +1295,7 @@ class PendingDispatch : Fragment() {
                                         dispatchCollectionRef.update(updates)
                                             .addOnSuccessListener {
                                                 hideProgress()
-                                                
+
                                                 requireContext().toast(resources.getString(R.string.update_success))
                                                 dialog.dismiss()
 
@@ -1347,15 +1314,18 @@ class PendingDispatch : Fragment() {
                 etClientCounterPrice1.visible(false)
                 negotiation1Price.visible(true)
                 negotiation1Price.text = resources.getString(
-                    R.string.money_text,model.negotiationPrice1)
+                    R.string.money_text, model.negotiationPrice1
+                )
                 etClientCounterPrice2.visible(false)
                 negotiation2Price.visible(true)
                 negotiation2Price.text = resources.getString(
-                    R.string.money_text,model.negotiationPrice2)
+                    R.string.money_text, model.negotiationPrice2
+                )
                 etClientCounterPrice3.visible(false)
                 negotiation3Price.visible(true)
                 negotiation3Price.text = resources.getString(
-                    R.string.money_text,model.negotiationPrice3)
+                    R.string.money_text, model.negotiationPrice3
+                )
                 if (loggedUser.role == resources.getString(R.string.driver)) {
                     tvNegotiationInfo.apply {
                         setTextColor(resources.getColor(R.color.reject))
@@ -1581,7 +1551,8 @@ class PendingDispatch : Fragment() {
                         )
 
                         dispatchCollectionRef.update(updates).addOnSuccessListener {
-                            userCollectionRef.document(selectedDriver).update("dispatch", dispatch.dispatchId).addOnSuccessListener {
+                            userCollectionRef.document(selectedDriver)
+                                .update("dispatch", dispatch.dispatchId).addOnSuccessListener {
 
                                 hideProgress()
                                 dialog.dismiss()
@@ -1674,7 +1645,7 @@ class PendingDispatch : Fragment() {
                                     "lastUpdater" to auth.uid!!,
                                     "negotiationRound" to resources.getString(R.string.negotiation_one),
                                     "negotiationPrice1" to
-                                        counterCharge
+                                            counterCharge
 
                                 )
 
@@ -1826,6 +1797,29 @@ class PendingDispatch : Fragment() {
         //hideProgress()
 
         return driverUser
+    }
+
+    private fun getWalletInfo(weigher: String): WalletData? {
+
+//        requireContext().showProgress()
+        val deferred = CoroutineScope(Dispatchers.IO).async {
+            try {
+                val snapshot = Common.walletCollectionRef.document(weigher).get().await()
+                if (snapshot.exists()) {
+                    return@async snapshot.toObject(WalletData::class.java)
+                } else {
+                    return@async null
+                }
+            } catch (e: Exception) {
+                requireContext().toast(e.message.toString())
+                return@async null
+            }
+        }
+
+        val wallet = runBlocking { deferred.await() }
+        //hideProgress()
+
+        return wallet
     }
 
     private fun checkLocationPermission(dispatch: Dispatch) {

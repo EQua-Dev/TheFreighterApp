@@ -172,7 +172,7 @@ fun convertMillisToISODate(milliseconds: Long?){
 
 fun isUpToTenMinutes(specificTimeMillis: Long): Boolean {
     val currentTimeMillis = System.currentTimeMillis()
-    val tenMinutesInMillis = 10 * 60 * 1000 // 10 minutes in milliseconds
+    val tenMinutesInMillis = 2 * 60 * 1000 // 10 minutes in milliseconds
 
     return currentTimeMillis - specificTimeMillis <= tenMinutesInMillis
 }

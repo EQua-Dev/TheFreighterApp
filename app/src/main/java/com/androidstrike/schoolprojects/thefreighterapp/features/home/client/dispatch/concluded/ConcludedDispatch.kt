@@ -114,7 +114,7 @@ class ConcludedDispatch : Fragment() {
             weigherRole -> {
                 concludedDispatches =
                     Common.dispatchCollectionRef.whereEqualTo("weigher", loggedUser.userId)
-                        .whereEqualTo("status", Common.STATUS_DELIVERED)
+                        .whereNotEqualTo("status", Common.STATUS_AWAITING_WEIGHER)
             }
 
             driverRole -> {
