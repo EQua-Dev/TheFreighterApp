@@ -678,7 +678,7 @@ class PendingDispatch : Fragment() {
                             dispatchCollectionRef.document(dispatch.dispatchId)
                         val sixtyPercent = dispatch.amount.toDouble().times(0.6)
                         //remove dispatch from driver
-                        userCollectionRef.document(dispatch.dispatchId)
+                        userCollectionRef.document(dispatch.driver)
                             .update("dispatch", "").addOnSuccessListener {
 
                             addDriverFunds(
