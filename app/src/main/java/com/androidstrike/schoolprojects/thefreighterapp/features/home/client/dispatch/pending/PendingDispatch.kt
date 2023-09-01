@@ -677,7 +677,11 @@ class PendingDispatch : Fragment() {
                         val dispatchCollectionRef =
                             dispatchCollectionRef.document(dispatch.dispatchId)
                         val sixtyPercent = dispatch.amount.toDouble().times(0.6)
-                        addDriverFunds(
+                        //remove dispatch from driver
+                        userCollectionRef.document(dispatch.dispatchId)
+                            .update("dispatch", "").addOnSuccessListener {
+
+                            addDriverFunds(
                             sixtyPercent,
                             dispatch.client,
                             dispatch.driver,
@@ -695,8 +699,8 @@ class PendingDispatch : Fragment() {
                             .addOnSuccessListener {
 
                                 //remove dispatch from driver
-                                userCollectionRef.document(dispatch.dispatchId)
-                                    .update("dispatch", "").addOnSuccessListener {
+//                                userCollectionRef.document(dispatch.dispatchId)
+//                                    .update("dispatch", "").addOnSuccessListener {
 
                                     hideProgress()
                                     confirmDialog.dismiss()
