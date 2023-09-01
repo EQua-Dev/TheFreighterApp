@@ -671,6 +671,10 @@ class PendingDispatch : Fragment() {
                             .addOnSuccessListener {
                                 hideProgress()
                                 confirmDialog.dismiss()
+                                lifecycleScope.launch {
+                                    userCollectionRef.document(dispatch.driver)
+                                        .update("dispatch", dispatch.dispatchId).await()
+                                }
 
                                 requireContext().toast(resources.getString(R.string.update_success))
                                 dialog.dismiss()
@@ -1323,6 +1327,7 @@ class PendingDispatch : Fragment() {
                                         dispatchCollectionRef.update(updates)
                                             .addOnSuccessListener {
                                                 hideProgress()
+                                                
                                                 requireContext().toast(resources.getString(R.string.update_success))
                                                 dialog.dismiss()
 
@@ -1575,9 +1580,12 @@ class PendingDispatch : Fragment() {
                         )
 
                         dispatchCollectionRef.update(updates).addOnSuccessListener {
-                            hideProgress()
-                            dialog.dismiss()
-                            launchFirstNegotiationDialog(dispatch, driver)
+                            userCollectionRef.document(selectedDriver).update("dispatch", dispatch.dispatchId).addOnSuccessListener {
+
+                                hideProgress()
+                                dialog.dismiss()
+                                launchFirstNegotiationDialog(dispatch, driver)
+                            }
 
                         }
 
@@ -1710,7 +1718,7 @@ class PendingDispatch : Fragment() {
 
                         lifecycleScope.launch {
                             userCollectionRef.document(driver.driverId)
-                                .update("dispatch", listOfDispatch).await()
+                                .update("dispatch", dispatch.dispatchId).await()
                         }
 
                         dialog.dismiss()
@@ -1952,7 +1960,7 @@ class PendingDispatch : Fragment() {
     }
 
     private fun getUser(userId: String): UserData? {
-        requireContext().showProgress()
+        //requireContext().showProgress()
         val deferred = CoroutineScope(Dispatchers.IO).async {
             try {
                 val snapshot = Common.userCollectionRef.document(userId).get().await()
@@ -1970,7 +1978,7 @@ class PendingDispatch : Fragment() {
         }
 
         val driverUser = runBlocking { deferred.await() }
-        hideProgress()
+        //hideProgress()
 
         return driverUser
     }
