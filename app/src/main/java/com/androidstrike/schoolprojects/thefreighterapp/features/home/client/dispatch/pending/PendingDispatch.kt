@@ -993,7 +993,7 @@ class PendingDispatch : Fragment() {
                                             ).set(walletTransaction).addOnSuccessListener {
                                                 val weigherInfo = getDispatchDriver(weigher)!!
                                                 val weigherWalletBalance =
-                                                    getWalletInfo(weigher)!!.walletBalance
+                                                    getWalletInfo(weigherInfo.wallet)!!.walletBalance
                                                 val newWeigherBalance =
                                                     weigherWalletBalance.toDouble()
                                                         .plus(weigherInfo.weigherCost.toDouble())
