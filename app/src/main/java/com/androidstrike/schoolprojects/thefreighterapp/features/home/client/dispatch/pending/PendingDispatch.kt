@@ -2,8 +2,11 @@ package com.androidstrike.schoolprojects.thefreighterapp.features.home.client.di
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Address
+import android.location.Geocoder
 import android.location.Location
 import android.net.Uri
 import android.os.Bundle
@@ -73,6 +76,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.util.Locale
 
 class PendingDispatch : Fragment() {
 
@@ -772,7 +777,7 @@ class PendingDispatch : Fragment() {
                         checkLocationPermission(dispatch)
                     }
                 } else {
-                    text = resources.getString(R.string.show_in_map)
+                    text = resources.getString(R.string.show_in_map)//getAddressFromLatLngString(requireContext(), dispatch.transitLocation)//resources.getString(R.string.show_in_map)
                         .ifEmpty { resources.getString(R.string.not_available) }
                     enable(dispatch.transitLocation.isNotEmpty())
                     setOnClickListener {
@@ -985,28 +990,19 @@ class PendingDispatch : Fragment() {
 
                                             walletHistoryReference.document(
                                                 System.currentTimeMillis().toString()
-                                            ).set(walletTransaction).await()
-
-
-                                        }
-                                        walletCollectionRef
-                                            .get()
-                                            .addOnSuccessListener { weigherWalletSnapshot: QuerySnapshot ->
+                                            ).set(walletTransaction).addOnSuccessListener {
                                                 val weigherInfo = getDispatchDriver(weigher)!!
-                                                val weigherWallet =
-                                                    getDispatchDriver(weigher)!!.wallet
                                                 val weigherWalletBalance =
                                                     getWalletInfo(weigher)!!.walletBalance
                                                 val newWeigherBalance =
                                                     weigherWalletBalance.toDouble()
                                                         .plus(weigherInfo.weigherCost.toDouble())
-                                                walletCollectionRef.document(weigherWallet).update(
+                                                walletCollectionRef.document(weigherInfo.wallet).update(
                                                     "walletBalance",
-                                                    newWeigherBalance.toString()
-                                                ).addOnSuccessListener {
+                                                    newWeigherBalance.toString()).addOnSuccessListener {
                                                     val walletHistoryReference =
                                                         walletCollectionRef.document(
-                                                            weigherWallet
+                                                            weigherInfo.wallet
                                                         ).collection(
                                                             Common.WALLET_HISTORY_REF
                                                         )
@@ -1035,6 +1031,55 @@ class PendingDispatch : Fragment() {
                                                     }
                                                 }
                                             }
+
+
+                                        }
+//                                        walletCollectionRef
+//                                            .get()
+//                                            .addOnSuccessListener { weigherWalletSnapshot: QuerySnapshot ->
+//                                                val weigherInfo = getDispatchDriver(weigher)!!
+//                                                val weigherWallet =
+//                                                    getDispatchDriver(weigher)!!.wallet
+//                                                val weigherWalletBalance =
+//                                                    getWalletInfo(weigher)!!.walletBalance
+//                                                val newWeigherBalance =
+//                                                    weigherWalletBalance.toDouble()
+//                                                        .plus(weigherInfo.weigherCost.toDouble())
+//                                                walletCollectionRef.document(weigherWallet).update(
+//                                                    "walletBalance",
+//                                                    newWeigherBalance.toString()
+//                                                ).addOnSuccessListener {
+//                                                    val walletHistoryReference =
+//                                                        walletCollectionRef.document(
+//                                                            weigherWallet
+//                                                        ).collection(
+//                                                            Common.WALLET_HISTORY_REF
+//                                                        )
+//                                                    val walletTransaction =
+//                                                        WalletHistory(
+//                                                            transactionDate = getDate(
+//                                                                System.currentTimeMillis(),
+//                                                                Common.DATE_FORMAT_LONG
+//                                                            ),
+//                                                            transactionType = "CR",
+//                                                            transactionAmount = resources.getString(
+//                                                                R.string.money_text,
+//                                                                getDispatchDriver(
+//                                                                    weigher
+//                                                                )?.weigherCost
+//                                                            ),
+//                                                            transactionReason = Common.REASON_WEIGH_PAY
+//                                                        )
+//
+//                                                    walletHistoryReference.document(
+//                                                        System.currentTimeMillis()
+//                                                            .toString()
+//                                                    ).set(walletTransaction).addOnCompleteListener {
+//                                                        hideProgress()
+//
+//                                                    }
+//                                                }
+//                                            }
                                     }
                             }
                         }
@@ -1904,6 +1949,45 @@ class PendingDispatch : Fragment() {
         }
     }
 
+    fun getAddressFromLatLngString(context: Context, latLngString: String): String {
+        // Split the latLngString into latitude and longitude
+        val latLngParts = latLngString.split(",")
+        if (latLngParts.size != 2) {
+            return "Invalid input"
+        }
+
+        val latitude = latLngParts[0].toDoubleOrNull()
+        val longitude = latLngParts[1].toDoubleOrNull()
+
+        if (latitude == null || longitude == null) {
+            return "Invalid latitude or longitude"
+        }
+
+        val geocoder = Geocoder(context, Locale.getDefault())
+        var addressText = ""
+
+        try {
+            val addresses: List<Address>? = geocoder.getFromLocation(latitude, longitude, 1)
+
+            if (addresses != null && addresses.isNotEmpty()) {
+                val address: Address = addresses[0]
+
+                // Build the address as a string
+                val addressParts = ArrayList<String>()
+
+                for (i in 0..address.maxAddressLineIndex) {
+                    addressParts.add(address.getAddressLine(i))
+                }
+
+                addressText = addressParts.joinToString(separator = "\n")
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        return addressText
+    }
+
 
     private fun navigateToLocation(location: String) {
         // Create a Uri with the latitude and longitude
@@ -1922,7 +2006,7 @@ class PendingDispatch : Fragment() {
         } else {
             // Handle the case where Google Maps is not installed on the device
             // For example, show an error message or use a different map provider.
-            requireContext().toast("Install Google Maps on you device")
+            requireContext().toast("Google Maps API Limit")
         }
     }
 
