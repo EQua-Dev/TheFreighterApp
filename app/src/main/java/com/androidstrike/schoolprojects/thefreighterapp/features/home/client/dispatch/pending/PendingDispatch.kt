@@ -296,7 +296,7 @@ class PendingDispatch : Fragment() {
                 //display dialog to select desired driver and begin negotiation.
                 when (loggedUser.role) {
                     resources.getString(R.string.driver) -> {
-                        if (!isUpToTenMinutes(model.statusChangeTime.toLong())) {// && model.interestedDrivers.isNotEmpty()){
+                        if (isUpToTenMinutes(model.statusChangeTime.toLong())) {// && model.interestedDrivers.isNotEmpty()){
                             //if (current time - model.statusChangeTime is equal or greater than 10 minutes){
                             // and if that time has elapsed, if there is any driver, they are told they cannot indicate anymore
                             Log.d(TAG, "launchDispatchDetailDialog: ${model.statusChangeTime}")

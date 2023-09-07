@@ -58,6 +58,9 @@
         <argument
             android:name="role"
             app:argType="string" />
+        <action
+            android:id="@+id/action_resetPassword_to_signIn"
+            app:destination="@id/signIn" />
     </fragment>
     <fragment
         android:id="@+id/splashScreen"
