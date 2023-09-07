@@ -486,7 +486,7 @@ class PendingDispatch : Fragment() {
     }
 
     private fun launchDispatchDetails(dispatch: Dispatch, status: String) {
-
+//show the details of a selected dispatch
         val builder =
             layoutInflater.inflate(R.layout.fragment_dispatch_details, null)
 
@@ -540,8 +540,6 @@ class PendingDispatch : Fragment() {
         }
 
         val loggedUser = getUser(auth.uid!!)!!
-
-
 
         dispatchDateCreated.text = resources.getString(
             R.string.dispatch_detail_date_created,
@@ -686,33 +684,33 @@ class PendingDispatch : Fragment() {
                         userCollectionRef.document(dispatch.driver)
                             .update("dispatch", "").addOnSuccessListener {
 
-                            addDriverFunds(
-                            sixtyPercent,
-                            dispatch.client,
-                            dispatch.driver,
-                            Common.REASON_DELIVERY_PAY
-                        )
-                        val updates = hashMapOf<String, Any>(
-                            "statusChangeTime" to System.currentTimeMillis()
-                                .toString(),
-                            "status" to STATUS_DELIVERED,
-                            "rating" to "0",
-                            "dateDelivered" to System.currentTimeMillis().toString(),
-                        )
+                                addDriverFunds(
+                                    sixtyPercent,
+                                    dispatch.client,
+                                    dispatch.driver,
+                                    Common.REASON_DELIVERY_PAY
+                                )
+                                val updates = hashMapOf<String, Any>(
+                                    "statusChangeTime" to System.currentTimeMillis()
+                                        .toString(),
+                                    "status" to STATUS_DELIVERED,
+                                    "rating" to "0",
+                                    "dateDelivered" to System.currentTimeMillis().toString(),
+                                )
 
-                        dispatchCollectionRef.update(updates)
-                            .addOnSuccessListener {
+                                dispatchCollectionRef.update(updates)
+                                    .addOnSuccessListener {
 
-                                //remove dispatch from driver
+                                        //remove dispatch from driver
 //                                userCollectionRef.document(dispatch.dispatchId)
 //                                    .update("dispatch", "").addOnSuccessListener {
 
-                                    hideProgress()
-                                    confirmDialog.dismiss()
-                                    requireContext().toast(resources.getString(R.string.update_success))
-                                    dialog.dismiss()
-                                    getRealtimePendingDispatch()
-                                }
+                                        hideProgress()
+                                        confirmDialog.dismiss()
+                                        requireContext().toast(resources.getString(R.string.update_success))
+                                        dialog.dismiss()
+                                        getRealtimePendingDispatch()
+                                    }
 
                             }
 
@@ -777,8 +775,9 @@ class PendingDispatch : Fragment() {
                         checkLocationPermission(dispatch)
                     }
                 } else {
-                    text = resources.getString(R.string.show_in_map)//getAddressFromLatLngString(requireContext(), dispatch.transitLocation)//resources.getString(R.string.show_in_map)
-                        .ifEmpty { resources.getString(R.string.not_available) }
+                    text =
+                        resources.getString(R.string.show_in_map)//getAddressFromLatLngString(requireContext(), dispatch.transitLocation)//resources.getString(R.string.show_in_map)
+                            .ifEmpty { resources.getString(R.string.not_available) }
                     enable(dispatch.transitLocation.isNotEmpty())
                     setOnClickListener {
                         navigateToLocation(dispatch.transitLocation)
@@ -798,6 +797,7 @@ class PendingDispatch : Fragment() {
             walletCollectionRef
                 .get()
                 .addOnSuccessListener { querySnapshot: QuerySnapshot ->
+                    //logic to subtract the funds from the customer's wallet and add to the driver's wallet
                     for (document in querySnapshot.documents) {
                         val item = document.toObject(WalletData::class.java)
                         if (item?.walletOwner == client) {
@@ -894,7 +894,8 @@ class PendingDispatch : Fragment() {
     }
 
     private fun launchWeigherAddWeightDialog(model: Dispatch) {
-
+        //dialog for the weigher to add the weight of the package
+        //it is in turn updated on the cloud db
         val builder =
             layoutInflater.inflate(R.layout.set_weigher_charge_dialog, null)
 
@@ -958,7 +959,7 @@ class PendingDispatch : Fragment() {
             walletCollectionRef
                 .get()
                 .addOnSuccessListener { querySnapshot: QuerySnapshot ->
-
+                    //logic to subtract funds from the customer's wallet and add to the weigherr's wallet
                     for (document in querySnapshot.documents) {
                         val item = document.toObject(WalletData::class.java)
                         if (item?.walletOwner == client) {
@@ -997,9 +998,11 @@ class PendingDispatch : Fragment() {
                                                 val newWeigherBalance =
                                                     weigherWalletBalance.toDouble()
                                                         .plus(weigherInfo.weigherCost.toDouble())
-                                                walletCollectionRef.document(weigherInfo.wallet).update(
-                                                    "walletBalance",
-                                                    newWeigherBalance.toString()).addOnSuccessListener {
+                                                walletCollectionRef.document(weigherInfo.wallet)
+                                                    .update(
+                                                        "walletBalance",
+                                                        newWeigherBalance.toString()
+                                                    ).addOnSuccessListener {
                                                     val walletHistoryReference =
                                                         walletCollectionRef.document(
                                                             weigherInfo.wallet
@@ -1031,55 +1034,7 @@ class PendingDispatch : Fragment() {
                                                     }
                                                 }
                                             }
-
-
                                         }
-//                                        walletCollectionRef
-//                                            .get()
-//                                            .addOnSuccessListener { weigherWalletSnapshot: QuerySnapshot ->
-//                                                val weigherInfo = getDispatchDriver(weigher)!!
-//                                                val weigherWallet =
-//                                                    getDispatchDriver(weigher)!!.wallet
-//                                                val weigherWalletBalance =
-//                                                    getWalletInfo(weigher)!!.walletBalance
-//                                                val newWeigherBalance =
-//                                                    weigherWalletBalance.toDouble()
-//                                                        .plus(weigherInfo.weigherCost.toDouble())
-//                                                walletCollectionRef.document(weigherWallet).update(
-//                                                    "walletBalance",
-//                                                    newWeigherBalance.toString()
-//                                                ).addOnSuccessListener {
-//                                                    val walletHistoryReference =
-//                                                        walletCollectionRef.document(
-//                                                            weigherWallet
-//                                                        ).collection(
-//                                                            Common.WALLET_HISTORY_REF
-//                                                        )
-//                                                    val walletTransaction =
-//                                                        WalletHistory(
-//                                                            transactionDate = getDate(
-//                                                                System.currentTimeMillis(),
-//                                                                Common.DATE_FORMAT_LONG
-//                                                            ),
-//                                                            transactionType = "CR",
-//                                                            transactionAmount = resources.getString(
-//                                                                R.string.money_text,
-//                                                                getDispatchDriver(
-//                                                                    weigher
-//                                                                )?.weigherCost
-//                                                            ),
-//                                                            transactionReason = Common.REASON_WEIGH_PAY
-//                                                        )
-//
-//                                                    walletHistoryReference.document(
-//                                                        System.currentTimeMillis()
-//                                                            .toString()
-//                                                    ).set(walletTransaction).addOnCompleteListener {
-//                                                        hideProgress()
-//
-//                                                    }
-//                                                }
-//                                            }
                                     }
                             }
                         }
@@ -1178,7 +1133,7 @@ class PendingDispatch : Fragment() {
             }
 
             n1 -> {
-
+                //if the negotiation is in the 1st round
                 //means user has given counter price
                 etClientCounterPrice1.visible(false)
                 negotiation1Price.visible(true)
@@ -1268,6 +1223,7 @@ class PendingDispatch : Fragment() {
             }
 
             n2 -> {
+                //if the negotiation is in the 2nd round
                 //means driver has given counter price
                 etClientCounterPrice1.visible(false)
                 negotiation1Price.visible(true)
@@ -1358,6 +1314,7 @@ class PendingDispatch : Fragment() {
             }
 
             n3 -> {
+                //if the negotiation is in the 3d round
                 //last updater is client
                 //driver either accept of cancels
                 etClientCounterPrice1.visible(false)
@@ -1558,6 +1515,7 @@ class PendingDispatch : Fragment() {
         var selectedDriver: String = ""
         btnSubmit.enable(false)
 
+        //fetch and populate the list of interested driver
 
         val interestedDriverDetails: MutableList<InterestedDriverDetail> = mutableListOf()
         val interestedDrivers = dispatch.interestedDrivers
@@ -1586,6 +1544,8 @@ class PendingDispatch : Fragment() {
                 setOnClickListener {
 
                     //after updating the chosen driver, dialog to accept price or negotiate pops up
+                    //change the status and update the existing dispatch
+
                     CoroutineScope(Dispatchers.IO).launch {
                         val dispatchCollectionRef =
                             dispatchCollectionRef.document(dispatch.dispatchId)
@@ -1603,21 +1563,14 @@ class PendingDispatch : Fragment() {
                             userCollectionRef.document(selectedDriver)
                                 .update("dispatch", dispatch.dispatchId).addOnSuccessListener {
 
-                                hideProgress()
-                                dialog.dismiss()
-                                launchFirstNegotiationDialog(dispatch, driver)
-                            }
+                                    hideProgress()
+                                    dialog.dismiss()
+                                    launchFirstNegotiationDialog(dispatch, driver)
+                                }
 
                         }
 
                     }
-                    //change the status and update the existing dispatch
-
-//                val status = STATUS_AWAITING_WEIGHER
-//                dispatch.weighingDate = weighingDate
-//                dispatch.weigher = selectedWeigher
-//                dispatch.status = status
-
 
                     Log.d(TAG, "launchAssignStaffDialog: $dispatch")
                     //createNewDispatch(dispatch)
@@ -1638,7 +1591,7 @@ class PendingDispatch : Fragment() {
         dispatch: Dispatch,
         driver: InterestedDriverDetail
     ) {
-
+        //after the client has selected a driver of their choice, they decide whether to go on with the price or negotiate
         val builder =
             layoutInflater.inflate(
                 R.layout.custom_client_counter_driver_init_offer,
@@ -1673,6 +1626,7 @@ class PendingDispatch : Fragment() {
 
         var counterCharge = ""
 
+        //user clicks to negotiate the driver's charge
         cbClientNegotiate.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 tilClientCounterOffer.enable(true)
@@ -1720,6 +1674,7 @@ class PendingDispatch : Fragment() {
 
         tvAcceptPrice.setOnClickListener {
             //update the status to awaiting driver
+            //set the accepted price as the agreed price on the cloud db
             CoroutineScope(Dispatchers.IO).launch {
                 val dispatchCollectionRef =
                     dispatchCollectionRef.document(dispatch.dispatchId)
@@ -1756,7 +1711,7 @@ class PendingDispatch : Fragment() {
     }
 
     private fun launchAddPickerDetailsDialog(dispatch: Dispatch) {
-
+        //after the user confirms pickup, the enter the details of who the driver is to call for the delivery
         val builder =
             layoutInflater.inflate(
                 R.layout.custom_picker_details_layout,
@@ -1826,7 +1781,7 @@ class PendingDispatch : Fragment() {
     }
 
     private fun getDispatchDriver(driver: String): UserData? {
-
+        //get driver information
 //        requireContext().showProgress()
         val deferred = CoroutineScope(Dispatchers.IO).async {
             try {
@@ -1850,6 +1805,7 @@ class PendingDispatch : Fragment() {
 
     private fun getWalletInfo(weigher: String): WalletData? {
 
+        //get wallet information
 //        requireContext().showProgress()
         val deferred = CoroutineScope(Dispatchers.IO).async {
             try {
@@ -1872,6 +1828,7 @@ class PendingDispatch : Fragment() {
     }
 
     private fun checkLocationPermission(dispatch: Dispatch) {
+        //check if user granted the app location permission
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -2044,6 +2001,7 @@ class PendingDispatch : Fragment() {
     }
 
     private fun getUser(userId: String): UserData? {
+        //get the user details
         //requireContext().showProgress()
         val deferred = CoroutineScope(Dispatchers.IO).async {
             try {

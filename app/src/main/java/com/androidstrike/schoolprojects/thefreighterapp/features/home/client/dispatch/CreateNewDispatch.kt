@@ -105,10 +105,11 @@ class CreateNewDispatch : Fragment() {
 
         loggedInUser = args.loggedUser
 
-        if (args.dispatchId.isNotEmpty()) {
+        //get the arguments (parameters) passed passed to this class to know if the user is here to create a new dispatch or edit a draft
+        if (args.dispatchId.isNotEmpty()) { //is here to edit draft
             dispatchId = args.dispatchId
             fetchDispatchDetails(dispatchId)
-        } else {
+        } else { //is here to create a new dispatch
             dispatchId = UUID.randomUUID().toString()
             val dispatch = Dispatch(
                 dispatchId = dispatchId
@@ -124,8 +125,7 @@ class CreateNewDispatch : Fragment() {
 
         with(binding) {
 
-
-
+            //populate the dropdown with the various types of packages
             val packageTypes = resources.getStringArray(R.array.package_types)
             val packageTypesAdapter =
                 ArrayAdapter(requireContext(), R.layout.drop_down_item, packageTypes)
@@ -288,14 +288,14 @@ class CreateNewDispatch : Fragment() {
                         dateCreated = System.currentTimeMillis().toString(),
                         statusChangeTime = System.currentTimeMillis().toString()
                     )
-
+                    //create a new dispatch in cloud if all conditions are met
                     createNewDispatch(newDispatch)
                 } else {
                     requireContext().toast(resources.getString(R.string.missing_fields))
                 }
             }
 
-            textDispatchPackageWeightContractors.setOnClickListener {
+            textDispatchPackageWeightContractors.setOnClickListener {//user clicks to contract a weigher
                 //prompt to fill out other details first
                 packageType = newDispatchChoosePackageType.text.toString().trim()
                 weight = dispatchPackageWeight.text.toString().trim()
@@ -332,7 +332,7 @@ class CreateNewDispatch : Fragment() {
                         dateCreated = System.currentTimeMillis().toString(),
                         statusChangeTime = System.currentTimeMillis().toString()
                     )
-
+                    //show screen to chose weigher
                     launchExternalContractorsDialog(newDispatch)
                 } else {
                     requireContext().toast(resources.getString(R.string.fill_details_before_weighing))
@@ -413,7 +413,7 @@ class CreateNewDispatch : Fragment() {
     }
 
     private fun launchExternalContractorsDialog(dispatch: Dispatch) {
-
+        //load list of weighers from the cloud db
         CoroutineScope(Dispatchers.IO).launch {
             Common.userCollectionRef.whereEqualTo("role", resources.getString(R.string.weigher))
                 .get()
@@ -590,6 +590,7 @@ class CreateNewDispatch : Fragment() {
 
     private fun createNewDispatch(newDispatch: Dispatch) {
         requireContext().showProgress()
+        //creates a new dispatch on the cloud
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 Common.dispatchCollectionRef.document(newDispatch.dispatchId).set(newDispatch)

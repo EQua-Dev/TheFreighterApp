@@ -59,7 +59,8 @@ class RegisterVehicle : Fragment() {
         uid = args.uid
         with(binding){
 
-
+            //watch the textfield and know when the user has clicked it
+            //then assign whatever has been typed to a variable and perform validation if the user has clicked out
             registerVehiclePlateNumber.setOnFocusChangeListener { v, hasFocus ->
                 val vehiclePlateNumberLayout = v as TextInputEditText
                 vehiclePlateNumber = vehiclePlateNumberLayout.text.toString().trim()

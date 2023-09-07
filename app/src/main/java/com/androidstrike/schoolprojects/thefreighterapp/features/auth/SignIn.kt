@@ -25,8 +25,11 @@ import kotlinx.coroutines.withContext
 
 class SignIn : Fragment() {
 
+    //this line connects the design file to this class file, making this file to be able to access the views
     private var _binding: FragmentSignInBinding? = null
     private val binding get() = _binding!!
+
+    //this line imports the argument (parameters) passed into this class such as the user role
     private val args: SignInArgs by navArgs()
 
     private lateinit var email: String
@@ -52,11 +55,13 @@ class SignIn : Fragment() {
 
         loggedInUser = UserData()
 
+        //navigates to the register screen when the text is clicked
         binding.accountLogInCreateAccount.setOnClickListener {
             val navToRegister = SignInDirections.actionSignInToRegister(role)
             findNavController().navigate(navToRegister)
         }
 
+        //navigates to the register screen when the text is clicked
         binding.accountLogInForgotPasswordPrompt.setOnClickListener {
             val navToResetPassword = SignInDirections.actionSignInToResetPassword(role)
             findNavController().navigate(navToResetPassword)
@@ -64,15 +69,17 @@ class SignIn : Fragment() {
 
         with(binding){
 
+            //the sign in button is disabled at first and enabled when the fields have been filled
             accountLogInBtnLogin.enable(false)
 
+            //watch the password text field  for when characters  will be entered
             signInPassword.addTextChangedListener {
                 email = signInEmail.text.toString().trim()
                 password = it.toString().trim()
                 binding.accountLogInBtnLogin.apply {
                     enable(email.isNotEmpty() && password.isNotEmpty())
                     setOnClickListener {
-
+                        //call the login function if the fields are not empty
                         login(email, password)
                     }
                 }
@@ -86,6 +93,7 @@ class SignIn : Fragment() {
 
         requireContext().showProgress()
 
+        //firebase functionality to sign the user in with the entered email and password
         email.let { auth.signInWithEmailAndPassword(it, password) }
             .addOnCompleteListener {
                 if (it.isSuccessful) {
@@ -119,14 +127,13 @@ class SignIn : Fragment() {
             userCollectionRef.whereEqualTo("userId", auth.uid.toString())
                 .get()
                 .addOnSuccessListener { querySnapshot: QuerySnapshot ->
-
+                    //get the details of the signed in user
                     for (document in querySnapshot.documents) {
                         val item = document.toObject(UserData::class.java)
                         if (item?.userId == auth.uid.toString())
                             loggedInUser = item
                     }
-
-
+                    //take the user to the phone verification screen
                     val navToPhoneVerification =
                         SignInDirections.actionSignInToPhoneVerification(role = role, loggedInUser.phoneNumber)
                     findNavController().navigate(navToPhoneVerification)
