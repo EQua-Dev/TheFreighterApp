@@ -189,6 +189,13 @@
     <string name="update_phone">Enter new phone number</string>
     <string name="update">Update</string>
     <string name="update_phone_number">Update Phone Number</string>
+    <string name="tv_enter_complaint_details">Enter Complaint Details</string>
+    <string name="enter_complaint_user_type">Complaint About</string>
+    <string name="enter_complaint_dispatch">Complaint Dispatch</string>
+    <string name="enter_complaint_text">Complaint Text</string>
+    <string name="btn_submit_complaint">Submit Complaint</string>
+    <string name="make_complaint_text">make complaint</string>
+    <string name="btn_cancel_complaint">Cancel Complaint</string>
 
     <string-array name="dispatch_tab_titles">
         <item>Pending</item>

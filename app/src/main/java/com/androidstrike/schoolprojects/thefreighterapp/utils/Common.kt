@@ -10,6 +10,7 @@ object Common {
     private const val USER_REF = "Freighter App Users"
     private const val DISPATCH_REF = "Freighter App Dispatches"
     private const val WALLET_REF = "Freighter App Wallets"
+    private const val COMPLAINTS_REF = "Freighter App Complaints"
     const val WALLET_HISTORY_REF = "Wallet History"
 
 
@@ -39,6 +40,7 @@ object Common {
     val userCollectionRef = Firebase.firestore.collection(USER_REF)
     val dispatchCollectionRef = Firebase.firestore.collection(DISPATCH_REF)
     val walletCollectionRef = Firebase.firestore.collection(WALLET_REF)
+    val complaintsCollectionRef = Firebase.firestore.collection(COMPLAINTS_REF)
     val walletHistoryCollectionRef = Firebase.firestore.collection(WALLET_HISTORY_REF)
 
     //N1 => user suggests different price from the initial driver price
